@@ -1,5 +1,8 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QGroupBox, QPushButton, QLabel, QVBoxLayout
+
+from PyQt5.QtCore import QSize
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QGroupBox, QPushButton, QLabel, QVBoxLayout, QSizePolicy
 
 
 class GuiExample(QWidget):
@@ -26,7 +29,7 @@ class GuiExample(QWidget):
         self.setLayout(main_layout)
 
         self.setWindowTitle('Raport GUI test v1')
-        self.setGeometry(100, 100, 1920, 1080)
+        self.setGeometry(100, 100, 1280, 720)
 
     def createGroupBox1(self):
         groupBox = QGroupBox()
@@ -52,16 +55,29 @@ class GuiExample(QWidget):
                                "border-radius: 10px; }")
         vbox3 = QVBoxLayout()
 
-        button_images_files = [
-            '',
-            '',
-            '',
-            '',
-            ''
+        ##Set the image names here
+        images_files = [
+            'settings.jpg',
+            'download.jpg',
+            'export.jpg',
+            'content.jpg',
+            'favorite.jpg',
+            'delete.jpg',
+            'graph1.png',
+            'graph2.png',
+            'graph3.png',
+            'graph4.png'
         ]
 
-        for i in range(1, 6):
-            button = QPushButton(f"Button {i}")
+        ##Uses a for statment to create 10 buttons with images instead with the width and hight of 20px
+        for i in range(1, 11):
+            button = QPushButton()
+            pixmap = QPixmap(images_files)
+            pixmap = pixmap.scaledToHeight(20)
+            pixmap = pixmap.scaledToWidth(20)
+            button.setIcon(QIcon(pixmap))
+            button.setIconSize(pixmap.size())
+            button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
             button.clicked.connect(lambda _, btn=i: self.on_button_clicked(btn))
             vbox3.addWidget(button)
 

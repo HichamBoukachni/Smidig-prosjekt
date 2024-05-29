@@ -93,16 +93,23 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(topright_container, alignment=Qt.AlignTop | Qt.AlignRight)
         """
 
+        title_layout = QHBoxLayout()
+        title_container = QWidget()
+        title_container.setLayout(title_layout)
+        main_layout.addWidget(title_container, alignment=Qt.AlignCenter)
+
         # Title
-        title = QLabel(f"Volatility 3 by\n")
-        title.setAlignment(Qt.AlignCenter)
-        title.setStyleSheet("""
-                            font-size: 80px; 
-                            padding-top: -20%; 
-                            margin-top: -20%;
-                            margin-bottom: -50%;
+        vol = QLabel(f"Volatility 3")
+        vol.setAlignment(Qt.AlignCenter)
+        vol.setStyleSheet("""
+                            font-size: 70px; 
+                            padding-top: 60%; 
+                            padding-bottom: -400%
                             """)
-        main_layout.addWidget(title)
+        title_layout.addWidget(vol)
+
+        by = QLabel(f"Volatility 3")
+        vol.setAlignment(Qt.AlignCenter)
 
         # Logo
         label = QLabel(self)

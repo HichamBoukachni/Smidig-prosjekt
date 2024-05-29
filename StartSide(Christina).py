@@ -21,6 +21,9 @@ class MainWindow(QMainWindow):
         main_layout = QVBoxLayout()
         main_widget.setLayout(main_layout)
 
+        # Top layout for Dropdown, Profile og Settings
+        top_layout = QHBoxLayout()
+
         # Dropdown
         self.dropdown = QComboBox()
         self.dropdown.addItems(["Linux", "Windows", "macOS"])
@@ -46,31 +49,73 @@ class MainWindow(QMainWindow):
                                         max-height: 150%;
                                     }
                                     """)
-        main_layout.addWidget(self.dropdown, alignment=Qt.AlignLeft)
+        top_layout.addWidget(self.dropdown, alignment=Qt.AlignTop | Qt.AlignLeft)
+        top_layout.addStretch()
+
+        # Profile and Settings buttons
+        self.profile_btn = QPushButton()
+        self.profile_btn.setIcon(QIcon("chrBilder/profilegray.png"))
+        self.profile_btn.setIconSize(QSize(40, 40))
+        self.profile_btn.setStyleSheet("QPushButton { background-color: ; border: none;}")
+        top_layout.addWidget(self.profile_btn, alignment=Qt.AlignTop)
+
+        self.settings_btn = QPushButton()
+        self.settings_btn.setIcon(QIcon("chrBilder/settings.png"))
+        self.settings_btn.setIconSize(QSize(40, 40))
+        self.settings_btn.setStyleSheet("QPushButton { background-color: ; border: none; }")
+        top_layout.addWidget(self.settings_btn, alignment=Qt.AlignTop)
+
+        main_layout.addLayout(top_layout)
+
+        """
+        # Settings and Profile icons
+        topright_layout = QHBoxLayout()
+        topright_layout.addStretch()
+
+        profile_btn = QPushButton()
+        profile_btn.setIcon(QIcon("chrBilder/profilegray.png"))
+        profile_btn.setIconSize(QSize(40, 40))
+        profile_btn.setStyleSheet(
+            "QPushButton { background-color: ; border: none; }")
+        topright_layout.addWidget(profile_btn)
+
+        settings_btn = QPushButton()
+        settings_btn.setIcon(QIcon("chrBilder/settings.png"))
+        settings_btn.setIconSize(QSize(40, 40))
+        settings_btn.setStyleSheet(
+            "QPushButton { background-color: ; border: none; }")
+        topright_layout.addWidget(settings_btn)
+
+        topright_container = QWidget()
+        topright_container.setStyleSheet("margin: 10%;"
+                                         "margin-top: -20%;")
+        topright_container.setLayout(topright_layout)
+        main_layout.addWidget(topright_container, alignment=Qt.AlignTop | Qt.AlignRight)
+        """
 
         # Title
         title = QLabel(f"Volatility 3 by\n")
         title.setAlignment(Qt.AlignCenter)
         title.setStyleSheet("""
-                            font-size: 70px; 
-                            padding-top: 60%; 
-                            padding-bottom: -400%
+                            font-size: 80px; 
+                            padding-top: -20%; 
+                            margin-top: -20%;
+                            margin-bottom: -50%;
                             """)
         main_layout.addWidget(title)
 
         # Logo
         label = QLabel(self)
         logo = QPixmap("chrBilder/mnemoniclogo.png")
-        scaled_logo = logo.scaled(320, 256, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        scaled_logo = logo.scaled(220, 156, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         label.setPixmap(scaled_logo)
-        label.setStyleSheet("""
-                            padding-bottom: 100%; 
-                            padding-top: -450%;
-                            margin-bottom: -50%; 
-                            margin-top: -50%;
+        label.setStyleSheet(""" 
+                            padding-top: -500%;
+                            margin-top: -500%;
                             """)
         label.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(label)
+
 
         # Icons layout
         icons_layout = QHBoxLayout()
@@ -80,10 +125,11 @@ class MainWindow(QMainWindow):
 
         icons_container.setStyleSheet("""border-style: solid;
                                       border-width: 2px;
-                                      border-radius: 10px;
+                                      border-radius: 15px;
                                       border-color: rgb(217, 111, 51);
+                                      background-color: rgb(28, 37, 48);
                                       width: 300%;
-                                      height: 160%;
+                                      height: 90%;
                                       """)
         icons_layout.setSpacing(30)
 
@@ -129,13 +175,14 @@ class MainWindow(QMainWindow):
             button.setToolTip(tooltip)
             button.setStyleSheet("""
                                 QPushButton { 
-                                    background-color:  rgb(28, 37, 48); 
+                                    background-color: rgb(59, 73, 89); 
                                     border-style: solid; 
                                     border-width: 2px;
-                                    border-radius: 10px;
+                                    border-radius: 15px;
                                     broder-color: rgb(217, 111, 51);
-                                    padding: 20px; 
-                                    width: 200%
+                                    margin: 20%;
+                                    padding: 10%; 
+                                    width: 150%
                                 } 
                                 QPushButton:hover { 
                                     background-color:  rgb(28, 37, 48); 
@@ -143,27 +190,7 @@ class MainWindow(QMainWindow):
                                 """)
             icons_layout.addWidget(button)
 
-        # Settings and Profile icons
-        top_right_layout = QHBoxLayout()
-        top_right_layout.addStretch()
 
-        profile_button = QPushButton()
-        profile_button.setIcon(QIcon("chrBilder/profile.png"))
-        profile_button.setIconSize(QPixmap("chrBilder/profile.png").rect().size())
-        profile_button.setStyleSheet(
-            "QPushButton { background-color: ; border: none; } QPushButton:hover { background-color: ; }")
-        top_right_layout.addWidget(profile_button)
-
-        settings_button = QPushButton()
-        settings_button.setIcon(QIcon("chrBilder/settings.png"))
-        settings_button.setIconSize(QSize(90, 90))
-        settings_button.setStyleSheet(
-            "QPushButton { background-color: ; border: none; } QPushButton:hover { background-color: ; }")
-        top_right_layout.addWidget(settings_button)
-
-        top_right_container = QWidget()
-        top_right_container.setLayout(top_right_layout)
-        main_layout.addWidget(top_right_container, alignment=Qt.AlignTop | Qt.AlignRight)
 
 
 if __name__ == "__main__":

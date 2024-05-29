@@ -1,4 +1,5 @@
 import sys
+import subprocess
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QComboBox, QHBoxLayout, QSpacerItem, QSizePolicy
 from PyQt5.QtGui import QPixmap, QFont, QIcon
 from PyQt5.QtCore import Qt, QSize
@@ -73,6 +74,7 @@ class StartPage(QWidget):
         self.button1.setIconSize(QSize(240, 240))  # Økt ikonstørrelse
         self.button1.setFixedSize(300, 300)  # Økt knappestørrelse
         self.button1.setStyleSheet(button_style)
+        self.button1.clicked.connect(self.open_terminal)
 
         self.button2 = QPushButton(self)
         self.button2.setIcon(QIcon(r'C:\users\hicha\Downloads\Plug.png'))  # Endret til riktig bane for Tools-logoen
@@ -101,6 +103,15 @@ class StartPage(QWidget):
         self.setWindowTitle('Volatility 3 Start Page')
         self.setGeometry(100, 100, 1200, 1000)  # Økt størrelse på vinduet
         self.setStyleSheet("background-color: #2b2b2b;")
+
+    def open_terminal(self):
+        volatility3_path = r"C:\Users\hicha\volatility3"  # Change to the actual path of Volatility 3
+        if sys.platform == "win32":
+            subprocess.Popen(f"start wt.exe cmd /K cd {volatility3_path}", shell=True)
+        elif sys.platform == "darwin":
+            subprocess.Popen(["open", "-a", "Terminal", volatility3_path])
+        elif sys.platform == "linux":
+            subprocess.Popen(["x-terminal-emulator", "-e", f"cd {volatility3_path} && bash"])
 
 def main():
     app = QApplication(sys.argv)

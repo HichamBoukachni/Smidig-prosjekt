@@ -1,18 +1,22 @@
 import sys
 import subprocess
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QComboBox, QHBoxLayout, QSpacerItem, QSizePolicy
+from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, QPushButton,
+                             QComboBox, QHBoxLayout, QSpacerItem, QSizePolicy)
 from PyQt5.QtGui import QPixmap, QFont, QIcon
 from PyQt5.QtCore import Qt, QSize
+from login_window import LoginWindow  # Import LoginWindow from login_window.py
 
 class StartPage(QWidget):
     def __init__(self):
         super().__init__()
-
         self.initUI()
 
     def initUI(self):
         # Sett hovedlayout
         main_layout = QVBoxLayout()
+
+        # Top bar with dropdown and user icons
+        top_bar = QHBoxLayout()
 
         # Dropdown-meny for plattformvalg
         self.combo = QComboBox(self)
@@ -32,10 +36,39 @@ class StartPage(QWidget):
                 selection-background-color: #3d3d3d;
             }
         """)
-        combo_layout = QHBoxLayout()
-        combo_layout.addWidget(self.combo)
-        combo_layout.addStretch()
-        main_layout.addLayout(combo_layout)
+        top_bar.addWidget(self.combo)
+        top_bar.addStretch()
+
+        # Icons on the top right
+        icon_style = """
+            QPushButton {
+                background-color: #2b2b2b;
+                border: none;
+                margin: 5px;
+            }
+            QPushButton:hover {
+                background-color: #444;
+            }
+        """
+
+        self.user_button = QPushButton(self)
+        self.user_button.setIcon(QIcon(r'C:\users\hicha\Downloads\userAvatarwhite.png'))  # Replace with the correct path
+        self.user_button.setIconSize(QSize(60, 60))  # Increased icon size
+        self.user_button.setFixedSize(70, 70)  # Increased button size
+        self.user_button.setStyleSheet(icon_style)
+        self.user_button.clicked.connect(self.user_action)
+
+        self.settings_button = QPushButton(self)
+        self.settings_button.setIcon(QIcon(r'C:\users\hicha\Downloads\settingswhite.png'))  # Replace with the correct path
+        self.settings_button.setIconSize(QSize(60, 60))  # Increased icon size
+        self.settings_button.setFixedSize(70, 70)  # Increased button size
+        self.settings_button.setStyleSheet(icon_style)
+        self.settings_button.clicked.connect(self.settings_action)
+
+        top_bar.addWidget(self.user_button)
+        top_bar.addWidget(self.settings_button)
+
+        main_layout.addLayout(top_bar)
 
         # Etikett for hovedtekst "Volatility 3 by"
         self.title = QLabel('Volatility 3 by')
@@ -105,13 +138,16 @@ class StartPage(QWidget):
         self.setStyleSheet("background-color: #2b2b2b;")
 
     def open_terminal(self):
-        volatility3_path = r"C:\Users\hicha\volatility3"  # Change to the actual path of Volatility 3
-        if sys.platform == "win32":
-            subprocess.Popen(f"start wt.exe cmd /K cd {volatility3_path}", shell=True)
-        elif sys.platform == "darwin":
-            subprocess.Popen(["open", "-a", "Terminal", volatility3_path])
-        elif sys.platform == "linux":
-            subprocess.Popen(["x-terminal-emulator", "-e", f"cd {volatility3_path} && bash"])
+        # Opens terminal and navigates to the volatility 3 directory
+        subprocess.run(["start", "cmd", "/k", "cd /d C:\\Users\\hicha\\volatility3"], shell=True)
+
+    def user_action(self):
+        # Show the login window when user button is clicked
+        self.login_window = LoginWindow()
+        self.login_window.show()
+
+    def settings_action(self):
+        print("Settings button clicked")
 
 def main():
     app = QApplication(sys.argv)

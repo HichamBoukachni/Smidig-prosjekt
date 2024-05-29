@@ -11,7 +11,8 @@ class MainWindow(QMainWindow):
         # Design for grunnsiden
         self.setWindowTitle("Volatility3")
         self.setGeometry(100, 100, 800, 400)
-        self.setStyleSheet("background-color: #2E3B4E; color: #BCC4D2;")
+        self.setStyleSheet("background-color:  rgb(18, 25, 33);"
+                           "color: rgb(230, 232, 234)")
         # self.showMaximized()
 
         # Main layout
@@ -40,7 +41,7 @@ class MainWindow(QMainWindow):
                                         width: 40%;
                                     }
                                     QComboBox::down-arrow {
-                                        image: url(bilder/orangearrow.png);
+                                        image: url(chrBilder/orangearrow.png);
                                         max-width: 150%; 
                                         max-height: 150%;
                                     }
@@ -59,7 +60,7 @@ class MainWindow(QMainWindow):
 
         # Logo
         label = QLabel(self)
-        logo = QPixmap("bilder/mnemoniclogo.png")
+        logo = QPixmap("chrBilder/mnemoniclogo.png")
         scaled_logo = logo.scaled(320, 256, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         label.setPixmap(scaled_logo)
         label.setStyleSheet("""
@@ -89,7 +90,7 @@ class MainWindow(QMainWindow):
         """
         button_style = 
                         QPushButton { 
-                            background-color: #3E4C61; 
+                            background-color: rgb(28, 37, 48); 
                             border-style: solid; 
                             border-width: 2px;
                             border-radius: 10px;
@@ -97,7 +98,7 @@ class MainWindow(QMainWindow):
                             padding: 20px; 
                         } 
                         QPushButton:hover { 
-                            background-color: #5A6B85; 
+                            background-color: rgb(28, 37, 48); 
                         }
 
         # Cmd button
@@ -106,7 +107,7 @@ class MainWindow(QMainWindow):
 
         # Plugin button
         pluginupload_btn = QPushButton("Plugin", "Upload")
-        # pluginupload_btn.setIcon(QPixmap("bilder/uploadgray.png"))
+        # pluginupload_btn.setIcon(QPixmap("chrBilder/uploadgray.png"))
         pluginupload_btn.setStyleSheet(button_style)
 
         # Result button
@@ -116,9 +117,9 @@ class MainWindow(QMainWindow):
 
         # Icons
         icons = [
-            (QPixmap("bilder/cmdgray.png"), "Command"),
-            (QPixmap("bilder/plugingray.png"), "Plugin"),
-            (QPixmap("bilder/resultgray.png"), "Result")
+            (QPixmap("chrBilder/cmdgray.png"), "Command"),
+            (QPixmap("chrBilder/plugingray.png"), "Plugin"),
+            (QPixmap("chrBilder/resultgray.png"), "Result")
         ]
 
         for icon, tooltip in icons:
@@ -128,7 +129,7 @@ class MainWindow(QMainWindow):
             button.setToolTip(tooltip)
             button.setStyleSheet("""
                                 QPushButton { 
-                                    background-color: #3E4C61; 
+                                    background-color:  rgb(28, 37, 48); 
                                     border-style: solid; 
                                     border-width: 2px;
                                     border-radius: 10px;
@@ -137,7 +138,7 @@ class MainWindow(QMainWindow):
                                     width: 200%
                                 } 
                                 QPushButton:hover { 
-                                    background-color: #5A6B85; 
+                                    background-color:  rgb(28, 37, 48); 
                                 }
                                 """)
             icons_layout.addWidget(button)
@@ -147,17 +148,17 @@ class MainWindow(QMainWindow):
         top_right_layout.addStretch()
 
         profile_button = QPushButton()
-        profile_button.setIcon(QIcon("profile.png"))
-        profile_button.setIconSize(QPixmap("profile.png").rect().size())
+        profile_button.setIcon(QIcon("chrBilder/profile.png"))
+        profile_button.setIconSize(QPixmap("chrBilder/profile.png").rect().size())
         profile_button.setStyleSheet(
-            "QPushButton { background-color: #2E3B4E; border: none; } QPushButton:hover { background-color: #5A6B85; }")
+            "QPushButton { background-color: ; border: none; } QPushButton:hover { background-color: ; }")
         top_right_layout.addWidget(profile_button)
 
         settings_button = QPushButton()
-        settings_button.setIcon(QIcon("settings.png"))
-        settings_button.setIconSize(QPixmap("settings.png").rect().size())
+        settings_button.setIcon(QIcon("chrBilder/settings.png"))
+        settings_button.setIconSize(QSize(90, 90))
         settings_button.setStyleSheet(
-            "QPushButton { background-color: #2E3B4E; border: none; } QPushButton:hover { background-color: #5A6B85; }")
+            "QPushButton { background-color: ; border: none; } QPushButton:hover { background-color: ; }")
         top_right_layout.addWidget(settings_button)
 
         top_right_container = QWidget()

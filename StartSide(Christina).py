@@ -1,5 +1,6 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QComboBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, \
+    QComboBox, QSpacerItem, QSizePolicy
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt, QSize
 
@@ -23,6 +24,16 @@ class MainWindow(QMainWindow):
 
         # Top layout for Dropdown, Profile og Settings
         top_layout = QHBoxLayout()
+        top_layout.setContentsMargins(0, 0, 0, 0)
+
+
+        # Middle layout for Title, margins og spacing
+        middle_layout = QHBoxLayout()
+        middle_spacer = QWidget()
+        middle_spacer.setFixedHeight(-50)
+        main_layout.addWidget(middle_spacer)
+        middle_layout.setContentsMargins(0, 70, 0, 0)
+        middle_layout.setSpacing(0)
 
         # Dropdown
         self.dropdown = QComboBox()
@@ -44,7 +55,7 @@ class MainWindow(QMainWindow):
                                         width: 40%;
                                     }
                                     QComboBox::down-arrow {
-                                        image: url(chrBilder/orangearrow.png);
+                                        image: url(icons/arrowdownO.png);
                                         max-width: 150%; 
                                         max-height: 150%;
                                     }
@@ -52,77 +63,45 @@ class MainWindow(QMainWindow):
         top_layout.addWidget(self.dropdown, alignment=Qt.AlignTop | Qt.AlignLeft)
         top_layout.addStretch()
 
-        # Profile and Settings buttons
+        # Profile og Settings buttons
         self.profile_btn = QPushButton()
-        self.profile_btn.setIcon(QIcon("chrBilder/profilegray.png"))
+        self.profile_btn.setIcon(QIcon("icons/profile.png"))
         self.profile_btn.setIconSize(QSize(40, 40))
         self.profile_btn.setStyleSheet("QPushButton { background-color: ; border: none;}")
         top_layout.addWidget(self.profile_btn, alignment=Qt.AlignTop)
 
         self.settings_btn = QPushButton()
-        self.settings_btn.setIcon(QIcon("chrBilder/settings.png"))
+        self.settings_btn.setIcon(QIcon("icons/settings.png"))
         self.settings_btn.setIconSize(QSize(40, 40))
         self.settings_btn.setStyleSheet("QPushButton { background-color: ; border: none; }")
         top_layout.addWidget(self.settings_btn, alignment=Qt.AlignTop)
 
         main_layout.addLayout(top_layout)
 
-        """
-        # Settings and Profile icons
-        topright_layout = QHBoxLayout()
-        topright_layout.addStretch()
-
-        profile_btn = QPushButton()
-        profile_btn.setIcon(QIcon("chrBilder/profilegray.png"))
-        profile_btn.setIconSize(QSize(40, 40))
-        profile_btn.setStyleSheet(
-            "QPushButton { background-color: ; border: none; }")
-        topright_layout.addWidget(profile_btn)
-
-        settings_btn = QPushButton()
-        settings_btn.setIcon(QIcon("chrBilder/settings.png"))
-        settings_btn.setIconSize(QSize(40, 40))
-        settings_btn.setStyleSheet(
-            "QPushButton { background-color: ; border: none; }")
-        topright_layout.addWidget(settings_btn)
-
-        topright_container = QWidget()
-        topright_container.setStyleSheet("margin: 10%;"
-                                         "margin-top: -20%;")
-        topright_container.setLayout(topright_layout)
-        main_layout.addWidget(topright_container, alignment=Qt.AlignTop | Qt.AlignRight)
-        """
-
-        title_layout = QHBoxLayout()
-        title_container = QWidget()
-        title_container.setLayout(title_layout)
-        main_layout.addWidget(title_container, alignment=Qt.AlignCenter)
-
         # Title
-        vol = QLabel(f"Volatility 3")
-        vol.setAlignment(Qt.AlignCenter)
-        vol.setStyleSheet("""
-                            font-size: 70px; 
-                            padding-top: 60%; 
-                            padding-bottom: -400%
-                            """)
-        title_layout.addWidget(vol)
+        self.titleVol = QLabel("Volatility3 ")
+        self.titleVol.setStyleSheet("color: rgb(177, 188, 200); font-size: 80px; font-weight: bold;")
+        self.titleVol.setAlignment(Qt.AlignCenter)
 
-        by = QLabel(f"Volatility 3")
-        vol.setAlignment(Qt.AlignCenter)
+        self.titleBy = QLabel("by")
+        self.titleBy.setStyleSheet("color: rgb(177, 188, 200); font-size: 40px; font-weight: bold; margin-top: 34%;")
+        self.titleBy.setAlignment(Qt.AlignCenter)
+
+        # Legger til Title til middle layout
+        middle_layout.addWidget(self.titleVol)
+        middle_layout.addWidget(self.titleBy)
+
+        main_layout.addLayout(middle_layout)
+        main_layout.setAlignment(middle_layout, Qt.AlignTop | Qt.AlignHCenter)
 
         # Logo
-        label = QLabel(self)
-        logo = QPixmap("chrBilder/mnemoniclogo.png")
-        scaled_logo = logo.scaled(220, 156, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        label.setPixmap(scaled_logo)
-        label.setStyleSheet(""" 
-                            padding-top: -500%;
-                            margin-top: -500%;
-                            """)
-        label.setAlignment(Qt.AlignCenter)
-        main_layout.addWidget(label)
+        self.logo = QLabel()
+        self.logo.setStyleSheet("width: ;")
+        self.logo.setAlignment(Qt.AlignCenter)
+        self.logo.setPixmap(QPixmap("icons/mnemoniclogo.png"))
 
+        middle_layout.addWidget(self.logo)
+        main_layout.addSpacerItem(QSpacerItem(40, 40, QSizePolicy.Maximum, QSizePolicy.Expanding))
 
         # Icons layout
         icons_layout = QHBoxLayout()
@@ -160,7 +139,7 @@ class MainWindow(QMainWindow):
 
         # Plugin button
         pluginupload_btn = QPushButton("Plugin", "Upload")
-        # pluginupload_btn.setIcon(QPixmap("chrBilder/uploadgray.png"))
+        # pluginupload_btn.setIcon(QPixmap("icons/uploadgray.png"))
         pluginupload_btn.setStyleSheet(button_style)
 
         # Result button
@@ -170,9 +149,9 @@ class MainWindow(QMainWindow):
 
         # Icons
         icons = [
-            (QPixmap("chrBilder/cmdgray.png"), "Command"),
-            (QPixmap("chrBilder/plugingray.png"), "Plugin"),
-            (QPixmap("chrBilder/resultgray.png"), "Result")
+            (QPixmap("icons/cmd.png"), "Command"),
+            (QPixmap("icons/plugin.png"), "Plugin"),
+            (QPixmap("icons/results.png"), "Result")
         ]
 
         for icon, tooltip in icons:

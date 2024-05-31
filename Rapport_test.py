@@ -8,20 +8,20 @@ from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QGroupBox, QPush
 class GuiExample(QWidget):
     def __init__(self):
         super().__init__()
-        self.initeUI()
+        self.initUI()
 
-    def initeUI(self):
+    def initUI(self):
         main_layout = QHBoxLayout()
 
         self.setStyleSheet("background-color: rgb(28, 37, 48);")
 
-        # Creating the boxes it self for the ui
+        #Creating the boxes it self for the ui
         main_layout.addWidget(self.createGroupBox1())
-        # 50px space between the left side to the middle box
+        #50px space between the left side to the middle box
         main_layout.addSpacing(30)
-        # 1 means that it can change size
+        #1 means that it can change size
         main_layout.addWidget(self.createGroupBox2(), 1)
-        # 15 px space between the right side to the middle box
+        #15 px space between the right side to the middle box
         main_layout.addSpacing(10)
         main_layout.addWidget(self.createGroupBox3())
 
@@ -40,6 +40,7 @@ class GuiExample(QWidget):
         groupBox.setLayout(lftBox)
         groupBox.setFixedWidth(300)
         return groupBox
+
     #This is the middle box, here is going to show the graphs etc.
     def createGroupBox2(self):
         groupBox = QGroupBox()
@@ -70,6 +71,7 @@ class GuiExample(QWidget):
             'images\_piechart.png',
             'images\_lines.png',
             'images\_navarrowleft.png'
+
         ]
 
         # Uses a for statement to create 10 buttons with images instead with the width and height of 100px
@@ -82,11 +84,11 @@ class GuiExample(QWidget):
 
             pixmap = QPixmap(full_path)
 
-            pixmap = pixmap.scaled(40, 40)  # this just resizes the pixmap to 50x50
+            pixmap = pixmap.scaled(30, 30)  # this just resizes the pixmap to 50x50
 
             button.setIcon(QIcon(pixmap))
 
-            button.setIconSize(QSize(50, 40))  #Set icon size to the pixmap size
+            button.setIconSize(QSize(40, 50))  #Set icon size to the pixmap size
 
             button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
@@ -95,18 +97,39 @@ class GuiExample(QWidget):
             rgtBox.addWidget(button)
 
             # Apply styles to make the button transparent and remove borders
-            button.setStyleSheet("QPushButton { border: none; background: transparent; }")
+            button.setStyleSheet("QPushButton "
+                                 "{ border: none; background: transparent; }")
 
             rgtBox.addWidget(button)
 
         # Set the width of the right box at static 100px, so it doesn't move
-        groupBox.setFixedWidth(90)
+        groupBox.setFixedWidth(70)
         groupBox.setLayout(rgtBox)
         return groupBox
 
     #this just defines what the buttons do when they are clicked.
     def on_button_clicked(self, button_number):
         print(f"Button {button_number} clicked")
+        if button_number == 1:
+            print("1")
+        if button_number == 2:
+            print("2")
+        if button_number == 3:
+            print("3")
+        if button_number == 4:
+            print("4")
+        if button_number == 5:
+            print("5")
+        if button_number == 6:
+            print("6")
+        if button_number == 7:
+            print("7")
+        if button_number == 8:
+            print("8")
+        if button_number == 9:
+            print("9")
+        if button_number == 10:
+            print("10")
 
 
 if __name__ == '__main__':

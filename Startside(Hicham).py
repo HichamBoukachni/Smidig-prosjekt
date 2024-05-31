@@ -1,10 +1,11 @@
 import sys
 import subprocess
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, QPushButton,
-                             QComboBox, QHBoxLayout, QSpacerItem, QSizePolicy)
+                             QComboBox, QHBoxLayout, QSpacerItem, QSizePolicy, QLineEdit)
 from PyQt5.QtGui import QPixmap, QFont, QIcon
 from PyQt5.QtCore import Qt, QSize
-from login_window import LoginWindow  # Import LoginWindow from login_window.py
+from login_window import LoginWindow  # Correct import
+from settings_window import SettingsWindow  # Correct import
 
 class StartPage(QWidget):
     def __init__(self):
@@ -52,7 +53,7 @@ class StartPage(QWidget):
         """
 
         self.user_button = QPushButton(self)
-        self.user_button.setIcon(QIcon(r'C:\users\hicha\Downloads\userAvatarwhite.png'))  # Replace with the correct path
+        self.user_button.setIcon(QIcon(r'C:\users\hicha\Downloads\UserAvatarwhite.png'))  # Replace with the correct path
         self.user_button.setIconSize(QSize(60, 60))  # Increased icon size
         self.user_button.setFixedSize(70, 70)  # Increased button size
         self.user_button.setStyleSheet(icon_style)
@@ -147,7 +148,9 @@ class StartPage(QWidget):
         self.login_window.show()
 
     def settings_action(self):
-        print("Settings button clicked")
+        # Show the settings window when settings button is clicked
+        self.settings_window = SettingsWindow()
+        self.settings_window.show()
 
 def main():
     app = QApplication(sys.argv)

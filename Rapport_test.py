@@ -60,16 +60,16 @@ class GuiExample(QWidget):
 
         #Here is the images that are used as buttons and are called in os.path.join
         image_files = [
-            'images\settings.png',
-            'images\download.png',
-            'images\export.png',
-            'images\content.png',
-            'images\ favorite.png',
-            'images\delete.png',
-            'images\graph1.png',
-            'images\graph2.png',
-            'images\graph3.png',
-            'images\graph4.png'
+            'images\_settings.png',
+            'images\_download.png',
+            'images\_share.png',
+            'images\_flag.png',
+            'images\_heart.png',
+            'images\_trash.png',
+            'images\_barchart.png',
+            'images\_piechart.png',
+            'images\_lines.png',
+            'images\_navarrowleft.png'
         ]
 
         # Uses a for statement to create 10 buttons with images instead with the width and height of 100px
@@ -86,7 +86,7 @@ class GuiExample(QWidget):
 
             button.setIcon(QIcon(pixmap))
 
-            button.setIconSize(QSize(40, 40))  #Set icon size to the pixmap size
+            button.setIconSize(QSize(50, 40))  #Set icon size to the pixmap size
 
             button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
@@ -100,7 +100,7 @@ class GuiExample(QWidget):
             rgtBox.addWidget(button)
 
         # Set the width of the right box at static 100px, so it doesn't move
-        groupBox.setFixedWidth(80)
+        groupBox.setFixedWidth(90)
         groupBox.setLayout(rgtBox)
         return groupBox
 

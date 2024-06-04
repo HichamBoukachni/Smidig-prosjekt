@@ -87,7 +87,8 @@ class LoginWindow(QWidget):
         self.setStyleSheet("background-color: #2b2b2b;")
 
 
-def show_login():
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
     login = LoginWindow()
     login.show()
-    return login
+    sys.exit(app.exec_())

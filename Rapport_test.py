@@ -152,6 +152,7 @@ class GuiExample(QWidget):
         subprocess.run(["python", "StartSide(Christina).py"])
         QApplication.quit()
 
+#kjører programmet
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = GuiExample()

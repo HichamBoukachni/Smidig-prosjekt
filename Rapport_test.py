@@ -1,8 +1,9 @@
+import subprocess
 import sys
 import os
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QGroupBox, QPushButton, QLabel, QVBoxLayout, QSizePolicy
+from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QGroupBox, QPushButton, QVBoxLayout, QSizePolicy, QFileDialog
 
 
 class GuiExample(QWidget):
@@ -84,7 +85,7 @@ class GuiExample(QWidget):
 
             pixmap = QPixmap(full_path)
 
-            pixmap = pixmap.scaled(30, 30)  # this just resizes the pixmap to 50x50
+            pixmap = pixmap.scaled(30, 30)  #This just resizes the pixmap to 50x50
 
             button.setIcon(QIcon(pixmap))
 
@@ -107,13 +108,13 @@ class GuiExample(QWidget):
         groupBox.setLayout(rgtBox)
         return groupBox
 
-    #this just defines what the buttons do when they are clicked.
+    #this just defines what the buttons do when they are clicked. right now only 1,2 and 10 are in use
     def on_button_clicked(self, button_number):
         print(f"Button {button_number} clicked")
         if button_number == 1:
-            print("1")
+            self.run_settings() #Opens settings
         if button_number == 2:
-            print("2")
+            self.open_download() #Opens file explorer
         if button_number == 3:
             print("3")
         if button_number == 4:
@@ -129,9 +130,29 @@ class GuiExample(QWidget):
         if button_number == 9:
             print("9")
         if button_number == 10:
-            print("10")
+            self.run_start_side() #Goes back to the main menu
 
+    #This function is for open the file explorer, while it is supposed to download the graph but right now its only for
+    #Opening the file explorer
+    def open_download(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        file_dialog = QFileDialog(self, "Select Files", "", "all files (*);; Python Files (*.py)", options=options)
+        file_dialog.setFileMode(QFileDialog.ExistingFiles)
 
+        if file_dialog.exec():
+            file_names = file_dialog.selectedFiles()
+            print("Seleted files:", file_names)
+    #This lets you open the settings window
+    def run_settings(self):
+        subprocess.run(["python", "settings_window.py"])
+
+    #This lets you open the window, while it is supposed to close this file but right now it just crashes dont know why
+    def run_start_side(self):
+        subprocess.run(["python", "StartSide(Christina).py"])
+        QApplication.quit()
+
+#kjører programmet.
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = GuiExample()

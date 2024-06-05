@@ -8,11 +8,13 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        # Main window styling
         self.setWindowTitle("Volatility3")
         self.resize(800, 600)
         self.setStyleSheet("background-color:  rgb(18, 25, 33);"
                            "color: rgb(177, 188, 200);")
 
+        # Main layout
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         main_layout = QVBoxLayout(central_widget)
@@ -44,11 +46,12 @@ class MainWindow(QMainWindow):
                                 }
                                 """)
         dropdown_layout.addWidget(dropdown, alignment=Qt.AlignLeft)
+
+        # Spacer to push dropdown up
         dropdown_layout.addSpacerItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
 
         # Profile and settings buttons
         profilesetting_layout = QHBoxLayout()
-
         profile_btn = QPushButton()
         profile_btn.setIcon(QIcon("images/_profile.png"))
         profile_btn.setFixedSize(40, 40)
@@ -59,9 +62,11 @@ class MainWindow(QMainWindow):
         setting_btn.setFixedSize(40, 40)
         setting_btn.setIconSize(setting_btn.size())
 
+        # Adding profile and settings buttons to profilesettings_layout
         profilesetting_layout.addWidget(profile_btn)
         profilesetting_layout.addWidget(setting_btn)
 
+        # Adding dropdown_layout to profilesettings_layout
         dropdown_layout.addLayout(profilesetting_layout)
         main_layout.addLayout(dropdown_layout)
 
@@ -70,6 +75,8 @@ class MainWindow(QMainWindow):
 
         # Title and Icon
         title_layout = QHBoxLayout()
+
+        # Spacer to create space over the title
         title_layout.addSpacerItem(QSpacerItem(40, 60, QSizePolicy.Expanding, QSizePolicy.Minimum))
 
         title = QLabel("<span style='font-size:80px'>Volatility3  </span> <span style='font-size:40px'>by</span>")
@@ -83,6 +90,7 @@ class MainWindow(QMainWindow):
         icon_label.setStyleSheet("image: url(images/_mnemoniclogo.png);")
         title_layout.addWidget(icon_label)
 
+        # Spacer to create space under the title
         title_layout.addSpacerItem(QSpacerItem(40, 60, QSizePolicy.Expanding, QSizePolicy.Minimum))
         main_layout.addLayout(title_layout)
 
@@ -106,13 +114,14 @@ class MainWindow(QMainWindow):
                                              height: 90%;
                                         """)
 
-        # Buttons
+        # Buttons images in a list
         icons = [
             (QPixmap("images/_cmd.png"), "Command"),
             (QPixmap("images/_plugin.png"), "Plugin"),
             (QPixmap("images/_results.png"), "Result")
         ]
 
+        # Loop to create a button for each item in the icons list
         for icon, tooltip in icons:
             button = QPushButton()
             button.setIcon(QIcon(icon))

@@ -115,7 +115,7 @@ class GuiExample(QWidget):
         if button_number == 1:
             self.run_settings() #Opens settings
         if button_number == 2:
-            self.calc_n_save()
+            self.calc_n_save() #lage en enkel cal til pdf fil
         if button_number == 3:
             print("3")
         if button_number == 4:

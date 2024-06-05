@@ -348,7 +348,7 @@ class MainWindow(QMainWindow):
             self.output_text_edit.append("No plugins selected.")
             return
 
-        vol_path = "volatility3/vol.py"  # Full path to vol.py
+        vol_path = "./volatility3/vol.py"  # Full path to vol.py
         for plugin in selected_plugins:
             print(f"Analyzing with plugin: {plugin}")
             self.output_text_edit.append(f"Analyzing with plugin: {plugin}")

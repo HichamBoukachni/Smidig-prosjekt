@@ -1,4 +1,5 @@
 import sys
+import os
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QPushButton,
                              QProgressBar, QComboBox, QWidget, QLabel, QTreeWidget, QTreeWidgetItem, QLineEdit,
                              QFileDialog, QCheckBox, QTextEdit, QSizePolicy)
@@ -190,6 +191,8 @@ class MainWindow(QMainWindow):
             }
         """)
 
+        self.vol_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'volatility3', 'vol.py')
+
     def add_plugins(self):
         self.plugin_items = []  # Store references to all plugin items for easy access
         self.parent_items = []  # Store references to parent items
@@ -348,11 +351,10 @@ class MainWindow(QMainWindow):
             self.output_text_edit.append("No plugins selected.")
             return
 
-        vol_path = "./volatility3/vol.py"  # Full path to vol.py
         for plugin in selected_plugins:
             print(f"Analyzing with plugin: {plugin}")
             self.output_text_edit.append(f"Analyzing with plugin: {plugin}")
-            command = ["python", vol_path, "-f", self.file_path, plugin]
+            command = ["python", self.vol_path, "-f", self.file_path, plugin]
             self.worker = Worker(command)
             self.worker.result_ready.connect(self.display_result)
             self.worker.start()

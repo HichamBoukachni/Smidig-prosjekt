@@ -1,4 +1,5 @@
 import sys
+import os
 import subprocess
 from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QLabel, QPushButton,
                              QComboBox, QHBoxLayout, QSpacerItem, QSizePolicy, QLineEdit)
@@ -139,8 +140,10 @@ class StartPage(QWidget):
         self.setStyleSheet("background-color: #2b2b2b;")
 
     def open_terminal(self):
+        # Calculate the absolute path to volatility3 directory
+        volatility3_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'volatility3')
         # Opens terminal and navigates to the volatility 3 directory
-        subprocess.run(["start", "cmd", "/k", "cd /d C:\\Users\\hicha\\volatility3"], shell=True)
+        subprocess.run(["start", "cmd", "/k", f"cd /d {volatility3_path}"], shell=True)
 
     def user_action(self):
         # Show the login window when user button is clicked

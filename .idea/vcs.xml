@@ -2,6 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Smidig-prosjekt" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/volatility3" vcs="Git" />
   </component>
 </project>

@@ -143,7 +143,7 @@ class StartPage(QWidget):
         # Calculate the absolute path to volatility3 directory
         volatility3_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'volatility3')
         # Opens terminal and navigates to the volatility 3 directory
-        subprocess.run(["start", "cmd", "/k", f"cd /d {volatility3_pat}"], shell=True)
+        subprocess.run(["start", "cmd", "/k", f"cd /d {volatility3_path}"], shell=True)
 
     def user_action(self):
         # Show the login window when user button is clicked

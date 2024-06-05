@@ -1,8 +1,86 @@
 import sys
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QPushButton,
-                             QProgressBar, QComboBox, QWidget, QLabel, QTreeWidget, QTreeWidgetItem, QLineEdit, QFileDialog)
+                             QProgressBar, QComboBox, QWidget, QLabel, QTreeWidget, QTreeWidgetItem, 
+                             QLineEdit, QFileDialog)
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt, QSize
+
+class VolatilityPluginViewer(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        # Initialize the main widget and layout
+        self.layout = QVBoxLayout(self)
+
+        # Initialize the QTreeWidget
+        self.plugins_list = QTreeWidget(self)
+        self.plugins_list.setHeaderHidden(True)
+        self.layout.addWidget(self.plugins_list)
+
+        # Populate the tree with plugins
+        self.populate_plugins()
+        self.plugins_list.itemClicked.connect(self.toggle_heart)
+
+    def populate_plugins(self):
+        categories = {
+            "Processes and Threads": ["pslist", "psscan", "threads", "ldrmodules"],
+            "Linux Plugins": ["bash.Bash", "capabilities.Capabilities", "check_afinfo.Check_afinfo", 
+                              "check_creds.Check_creds", "check_idt.Check_idt", "check_modules.Check_modules", 
+                              "check_syscall.Check_syscall", "elfs.Elfs", "envars.Envars", "iomem.IOMem", 
+                              "keyboard_notifiers.Keyboard_notifiers", "kmsg.Kmsg", "library_list.LibraryList", 
+                              "lsmod.Lsmod", "lsof.Lsof", "malfind.Malfind", "mountinfo.MountInfo", "proc.Maps", 
+                              "psaux.PsAux", "pslist.PsList", "psscan.PsScan", "pstree.PsTree", "sockstat.Sockstat", 
+                              "tty_check.tty_check", "vmayarascan.VmaYaraScan"],
+            "Mac Plugins": ["bash.Bash", "check_syscall.Check_syscall", "check_sysctl.Check_sysctl", 
+                            "check_trap_table.Check_trap_table", "dmesg.Dmesg", "ifconfig.Ifconfig", 
+                            "kauth_listeners.Kauth_listeners", "kauth_scopes.Kauth_scopes", "kevents.Kevents", 
+                            "list_files.List_Files", "lsmod.Lsmod", "lsof.Lsof", "malfind.Malfind", "mount.Mount", 
+                            "netstat.Netstat", "proc_maps.Maps", "psaux.Psaux", "pslist.PsList", "pstree.PsTree", 
+                            "socket_filters.Socket_filters", "timers.Timers", "trustedbsd.Trustedbsd", "vfsevents.VFSevents"],
+            "Windows Plugins": ["bigpools.BigPools", "cachedump.Cachedump", "callbacks.Callbacks", "cmdline.CmdLine", 
+                                "crashinfo.Crashinfo", "devicetree.DeviceTree", "dlllist.DllList", "driverirp.DriverIrp", 
+                                "drivermodule.DriverModule", "driverscan.DriverScan", "dumpfiles.DumpFiles", "envars.Envars", 
+                                "filescan.FileScan", "getservicesids.GetServiceSIDs", "getsids.GetSIDs", "handles.Handles", 
+                                "hashdump.Hashdump", "iat.IAT", "info.Info", "joblinks.JobLinks", "ldrmodules.LdrModules", 
+                                "lsadump.Lsadump", "malfind.Malfind", "mbrscan.MBRScan", "memmap.Memmap", "mftscan.ADS", 
+                                "mftscan.MFTScan", "modscan.ModScan", "modules.Modules", "mutantscan.MutantScan", "netscan.NetScan", 
+                                "netstat.NetStat", "poolscanner.PoolScanner", "privileges.Privs", "pslist.PsList", "psscan.PsScan", 
+                                "pstree.PsTree", "registry.certificates.Certificates", "registry.hivelist.HiveList", "registry.hivescan.HiveScan", 
+                                "registry.printkey.PrintKey", "registry.userassist.UserAssist", "sessions.Sessions", 
+                                "skeleton_key_check.Skeleton_Key_Check", "ssdt.SSDT", "statistics.Statistics", "strings.Strings", 
+                                "svcscan.SvcScan", "symlinkscan.SymlinkScan", "thrdscan.ThrdScan", "truecrypt.Passphrase", "vadinfo.VadInfo", 
+                                "vadwalk.VadWalk", "vadyarascan.VadYaraScan", "verinfo.VerInfo", "virtmap.VirtMap"],
+            "Misc Plugins": ["banners.Banners", "configwriter.ConfigWriter", "frameworkinfo.FrameworkInfo", "isfinfo.IsfInfo", 
+                             "layerwriter.LayerWriter", "timeliner.Timeliner", "yarascan.YaraScan"],
+            "File system": ["filescan", "dumpfiles", "envars"],
+            "Network": ["netscan", "connections", "sockets"],
+            "Registry": ["printkey", "hivelist", "userassist"],
+            "Memory and Handles": ["handles", "dlllist", "malfind"],
+            "System Information": ["imageinfo", "kdbgscan", "info"]
+        }
+
+        for category, sub_items in categories.items():
+            category_item = QTreeWidgetItem(self.plugins_list)
+            category_item.setText(0, category)
+            for sub_item in sub_items:
+                child_item = QTreeWidgetItem(category_item)
+                child_item.setText(0, "🤍 " + sub_item)
+
+    def set_hearted(self, item, hearted):
+        text = item.text(0)
+        if hearted:
+            item.setText(0, "🧡 " + text.replace("🤍", "").strip())
+        else:
+            item.setText(0, "🤍 " + text.replace("🧡", "").strip())
+
+    def toggle_heart(self, item, column):
+        parent = item.parent()
+        if parent is not None:  # Only toggle heart for sub-items
+            text = item.text(0)
+            if "🧡" in text:
+                self.set_hearted(item, False)
+            else:
+                self.set_hearted(item, True)
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -39,53 +117,8 @@ class MainWindow(QMainWindow):
         self.sidebar_layout.addWidget(self.favorites_combobox)
 
         # Plugins list
-        self.plugins_list = QTreeWidget(self)
-        self.plugins_list.setHeaderHidden(True)
+        self.plugins_list = VolatilityPluginViewer()
         self.sidebar_layout.addWidget(self.plugins_list)
-
-        self.processes_item = QTreeWidgetItem(self.plugins_list)
-        self.processes_item.setText(0, "Processes and Threads")
-
-        for sub_item in ["pslist", "psscan", "threads", "ldrmodules"]:
-            child_item = QTreeWidgetItem(self.processes_item)
-            child_item.setText(0, "🤍 " + sub_item)
-
-        self.file_system_item = QTreeWidgetItem(self.plugins_list)
-        self.file_system_item.setText(0, "File system")
-
-        for sub_item in ["filescan", "dumpfiles", "envars"]:
-            child_item = QTreeWidgetItem(self.file_system_item)
-            child_item.setText(0, "🤍 " + sub_item)
-
-        self.network_item = QTreeWidgetItem(self.plugins_list)
-        self.network_item.setText(0, "Network")
-
-        for sub_item in ["netscan", "connections", "sockets"]:
-            child_item = QTreeWidgetItem(self.network_item)
-            child_item.setText(0, "🤍 " + sub_item)
-
-        self.registry_item = QTreeWidgetItem(self.plugins_list)
-        self.registry_item.setText(0, "Registry")
-
-        for sub_item in ["printkey", "hivelist", "userassist"]:
-            child_item = QTreeWidgetItem(self.registry_item)
-            child_item.setText(0, "🤍 " + sub_item)
-
-        self.memory_item = QTreeWidgetItem(self.plugins_list)
-        self.memory_item.setText(0, "Memory and Handles")
-
-        for sub_item in ["handles", "dlllist", "malfind"]:
-            child_item = QTreeWidgetItem(self.memory_item)
-            child_item.setText(0, "🤍 " + sub_item)
-
-        self.system_info_item = QTreeWidgetItem(self.plugins_list)
-        self.system_info_item.setText(0, "System Information")
-
-        for sub_item in ["imageinfo", "kdbgscan", "info"]:
-            child_item = QTreeWidgetItem(self.system_info_item)
-            child_item.setText(0, "🤍 " + sub_item)
-
-        self.plugins_list.itemClicked.connect(self.toggle_heart)
 
         # Main content area
         self.content_layout = QVBoxLayout()
@@ -125,7 +158,7 @@ class MainWindow(QMainWindow):
 
         # Placeholder Image/Icon Button
         self.upload_button = QPushButton(self)
-        self.upload_button.setIcon(QIcon(r'C:\Users\hicha\Downloads\Upload orange.png'))
+        self.upload_button.setIcon(QIcon(r'C:\Users\Sambo\OneDrive\Documents\Data Field\plugin1..jpg'))
         self.upload_button.setIconSize(QSize(192, 192))  # Making the icon three times larger
         self.upload_button.setFlat(True)
         self.upload_button.clicked.connect(self.open_file_dialog)
@@ -176,22 +209,6 @@ class MainWindow(QMainWindow):
             }
         """)
 
-    def set_hearted(self, item, hearted):
-        text = item.text(0)
-        if hearted:
-            item.setText(0, "🧡 " + text.replace("🤍", "").strip())
-        else:
-            item.setText(0, "🤍 " + text.replace("🧡", "").strip())
-
-    def toggle_heart(self, item, column):
-        parent = item.parent()
-        if parent is not None:  # Only toggle heart for sub-items
-            text = item.text(0)
-            if "🧡" in text:
-                self.set_hearted(item, False)
-            else:
-                self.set_hearted(item, True)
-
     def open_file_dialog(self):
         file_dialog = QFileDialog()
         file_dialog.setFileMode(QFileDialog.AnyFile)
@@ -205,3 +222,4 @@ if __name__ == "__main__":
     window = MainWindow()
     window.show()
     sys.exit(app.exec_())
+

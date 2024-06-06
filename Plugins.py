@@ -4,7 +4,7 @@ import os
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QPushButton,
                              QProgressBar, QComboBox, QWidget, QLabel, QTreeWidget, QTreeWidgetItem, QLineEdit,
                              QFileDialog, QCheckBox, QTextEdit, QSizePolicy, QSplitter, QFrame)
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QIcon, QPixmap, QFont
 from PyQt5.QtCore import Qt, QSize, QThread, pyqtSignal
 import subprocess
 
@@ -30,6 +30,7 @@ class Worker(QThread):
         lines = text.splitlines()
         filtered_lines = [line for line in lines if not line.startswith("Progress:")]
         return "\n".join(filtered_lines)
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -115,41 +116,14 @@ class MainWindow(QMainWindow):
         # Adding progress_bar_layout to content_layout
         self.content_layout.addLayout(self.progress_bar_layout)
 
-        """
-        # Adding play, pause, and stop buttons with icons
-        icon_size = 24
-        self.play_button = QPushButton(self)
-        self.play_button.setIcon(QIcon(QPixmap(icon_size, icon_size)))
-        self.progress_bar_layout.addWidget(self.play_button)
-
-        self.pause_button = QPushButton(self)
-        self.pause_button.setIcon(QIcon(QPixmap(icon_size, icon_size)))
-        self.progress_bar_layout.addWidget(self.pause_button)
-
-        self.stop_button = QPushButton(self)
-        self.stop_button.setIcon(QIcon(QPixmap(icon_size, icon_size)))
-        self.progress_bar_layout.addWidget(self.stop_button)
-
-        self.content_layout.addLayout(self.progress_bar_layout)
-        """
-        # Placeholder Area (GAMMEL KODE)
-        # self.placeholder = QLabel(self)
-        # self.placeholder.setAlignment(Qt.AlignCenter)
-        # self.placeholder.setText("")
-        # self.content_layout.addWidget(self.placeholder, alignment=Qt.AlignCenter)
-
         # Placeholder Image/Icon Button
         self.upload_button = QPushButton(self)
-        #self.upload_button.setIcon(QIcon("images/_uploadorange.png"))
         self.upload_button.setIconSize(QSize(192, 192))  # Making the icon three times larger
         self.upload_button.setFlat(True)
         self.upload_button.setFixedSize(150, 192)
         self.upload_button.clicked.connect(self.open_file_dialog)
         self.upload_button.setObjectName("upload_button")
-        # (GAMMEL KODE)
-        # self.placeholder_layout = QVBoxLayout(self.placeholder)
-        # self.placeholder_layout.addWidget(self.upload_button, alignment=Qt.AlignCenter)
-        self.content_layout.addWidget(self.upload_button, alignment=Qt.AlignCenter) # Endret fra placeholder_layout til content_layout
+        self.content_layout.addWidget(self.upload_button, alignment=Qt.AlignCenter)
 
         # Analyze Button
         self.analyze_button = QPushButton("Analyze", self)
@@ -175,7 +149,7 @@ class MainWindow(QMainWindow):
         self.output_text_edit = QTextEdit(self)
         self.output_text_edit.setReadOnly(True)
         self.output_text_edit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.result_layout.addWidget(self.output_text_edit) # Endret fra content_layout til result_layout
+        self.result_layout.addWidget(self.output_text_edit)  # Endret fra content_layout til result_layout
 
         # Vertical Splitter
         self.vertical_splitter = QSplitter(Qt.Vertical)
@@ -183,10 +157,6 @@ class MainWindow(QMainWindow):
         self.vertical_splitter.addWidget(self.output_text_edit)
 
         self.content_layout.addWidget(self.vertical_splitter)
-
-        # Set placeholder size (GAMMEL KODE)
-        # self.placeholder.setFixedHeight(self.height() - self.progress_bar.height() - 20)
-        # self.placeholder.setFixedWidth(self.width() - self.sidebar_layout.sizeHint().width() - 20)
 
         # Styling
         self.setStyleSheet("""
@@ -258,7 +228,7 @@ class MainWindow(QMainWindow):
             QSplitter::handle {
                 background-color: rgb(28, 37, 48);
             }
-            
+
             QFrame#placeholder_frame { 
                 background-color: rgb(42, 53, 65);
                 color: white;
@@ -282,7 +252,7 @@ class MainWindow(QMainWindow):
         self.vol_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'volatility3', 'vol.py')
 
     def add_plugins(self):
-        self.plugin_items = []  # Store references to all plugin items for easy access
+        self.plugin_items = {}  # Use a dictionary to store references to all plugin items for easy access
         self.parent_items = []  # Store references to parent items
 
         processes_item = QTreeWidgetItem(self.plugins_list)
@@ -304,21 +274,23 @@ class MainWindow(QMainWindow):
         network_item.setText(0, "Network")
         self.parent_items.append(network_item)
 
-        for sub_item in ["windows.netscan.NetScan", "windows.netstat.NetStat"]: # tok vekk disse "windows.connections.Connections", "windows.sockets.Sockets"]:
+        for sub_item in ["windows.netscan.NetScan", "windows.netstat.NetStat"]:
             self.add_plugin_item(network_item, sub_item)
 
         registry_item = QTreeWidgetItem(self.plugins_list)
         registry_item.setText(0, "Registry")
         self.parent_items.append(registry_item)
 
-        for sub_item in ["windows.printkey.PrintKey", "windows.registry.hivelist.HiveList", "windows.registry.certificates.Certificates"]: # tok vekk denne "windows.userassist.UserAssist"]:
+        for sub_item in ["windows.printkey.PrintKey", "windows.registry.hivelist.HiveList",
+                         "windows.registry.certificates.Certificates"]:
             self.add_plugin_item(registry_item, sub_item)
 
         memory_item = QTreeWidgetItem(self.plugins_list)
         memory_item.setText(0, "Memory and Handles")
         self.parent_items.append(memory_item)
 
-        for sub_item in ["windows.handles.Handles", "windows.dlllist.DllList", "windows.malfind.Malfind", "windows.memmap.Memmap"]:
+        for sub_item in ["windows.handles.Handles", "windows.dlllist.DllList", "windows.malfind.Malfind",
+                         "windows.memmap.Memmap"]:
             self.add_plugin_item(memory_item, sub_item)
 
         system_info_item = QTreeWidgetItem(self.plugins_list)
@@ -347,32 +319,33 @@ class MainWindow(QMainWindow):
         additional_features_item.setText(0, "Additional Features")
         self.parent_items.append(additional_features_item)
 
-        for sub_item in ["windows.volshell.Volshell", "yarascan.YaraScan"]: # Dette funker ikke
+        for sub_item in ["windows.volshell.Volshell", "yarascan.YaraScan"]:
             self.add_plugin_item(additional_features_item, sub_item)
 
     def add_plugin_item(self, parent_item, plugin_name):
         item_widget = QWidget()
         item_layout = QHBoxLayout(item_widget)
         item_layout.setContentsMargins(0, 0, 0, 0)
+        item_layout.setSpacing(10)  # Ensure consistent spacing
         item_label = QLabel(plugin_name)
         item_label.setToolTip(plugin_name)
         item_label.setStyleSheet("QToolTip:hover { background-color: white; color: black; border: solid;}")
-        item_layout.addWidget(item_label)
+        item_layout.addWidget(item_label, alignment=Qt.AlignLeft)
+
         checkbox = QCheckBox(self)
-        item_layout.addWidget(checkbox)
+        item_layout.addWidget(checkbox, alignment=Qt.AlignRight)
 
         # Add heart button for favorites
-        heart_button = QPushButton("❤️")
-        heart_button.setFlat(True)
-        heart_button.setStyleSheet("color: white;")
-        heart_button.clicked.connect(lambda: self.toggle_favorite(plugin_name, heart_button, checkbox))
-        item_layout.addWidget(heart_button)
+        heart_label = QLabel("🤍")
+        heart_label.setFont(QFont("Arial", 12))  # Adjusted font size to 12px
+        heart_label.mousePressEvent = lambda event, p=plugin_name: self.toggle_favorite(p, heart_label)
+        item_layout.addWidget(heart_label, alignment=Qt.AlignRight)
 
         item_widget.setLayout(item_layout)
 
         tree_item = QTreeWidgetItem(parent_item)
         self.plugins_list.setItemWidget(tree_item, 0, item_widget)
-        self.plugin_items.append((plugin_name, checkbox))
+        self.plugin_items[plugin_name] = {'checkbox': checkbox, 'heart_label': heart_label, 'tree_item': tree_item}
 
     def filter_plugins(self, text):
         text = text.lower()
@@ -414,15 +387,15 @@ class MainWindow(QMainWindow):
             self.plugins_list.hide()
             self.favorites_list.show()
 
-    def toggle_favorite(self, plugin_name, button, original_checkbox):
+    def toggle_favorite(self, plugin_name, heart_label):
         if plugin_name in self.favorites:
             self.remove_from_favorites(plugin_name)
-            button.setText("❤️")
+            heart_label.setText("🤍")
         else:
-            self.add_to_favorites(plugin_name, original_checkbox)
-            button.setText("💔")
+            self.add_to_favorites(plugin_name)
+            heart_label.setText("🧡")
 
-    def add_to_favorites(self, plugin_name, original_checkbox):
+    def add_to_favorites(self, plugin_name):
         if plugin_name not in self.favorites:
             self.favorites.add(plugin_name)
             favorite_item = QTreeWidgetItem(self.favorites_list)
@@ -430,23 +403,23 @@ class MainWindow(QMainWindow):
             item_widget = QWidget()
             item_layout = QHBoxLayout(item_widget)
             item_layout.setContentsMargins(0, 0, 0, 0)
+            item_layout.setSpacing(10)  # Ensure consistent spacing
             item_label = QLabel(plugin_name)
-            item_layout.addWidget(item_label)
-            checkbox = QCheckBox(self)
-            checkbox.setChecked(original_checkbox.isChecked())
-            item_layout.addWidget(checkbox)
+            item_layout.addWidget(item_label, alignment=Qt.AlignLeft)
 
-            # Add heart button for removal from favorites
-            heart_button = QPushButton("💔")
-            heart_button.setFlat(True)
-            heart_button.setStyleSheet("color: white;")
-            heart_button.clicked.connect(lambda: self.toggle_favorite(plugin_name, heart_button, checkbox))
-            item_layout.addWidget(heart_button)
+            checkbox = QCheckBox(self)
+            item_layout.addWidget(checkbox, alignment=Qt.AlignRight)
+
+            heart_label = QLabel("🧡")
+            heart_label.setFont(QFont("Arial", 12))  # Adjusted font size to 12px
+            heart_label.mousePressEvent = lambda event, p=plugin_name: self.toggle_favorite(p, heart_label)
+            item_layout.addWidget(heart_label, alignment=Qt.AlignRight)
 
             item_widget.setLayout(item_layout)
             self.favorites_list.setItemWidget(favorite_item, 0, item_widget)
 
-            self.plugin_items.append((plugin_name, checkbox))
+            self.plugin_items[plugin_name]['favorite_checkbox'] = checkbox
+            self.plugin_items[plugin_name]['favorite_heart_label'] = heart_label
 
     def remove_from_favorites(self, plugin_name):
         if plugin_name in self.favorites:
@@ -454,11 +427,19 @@ class MainWindow(QMainWindow):
             root = self.favorites_list.invisibleRootItem()
             for i in range(root.childCount()):
                 child = root.child(i)
-                if child.text(0) == plugin_name:
-                    root.removeChild(child)
-                    break
+                widget = self.favorites_list.itemWidget(child, 0)
+                if widget:
+                    label = widget.findChild(QLabel)
+                    if label and label.text() == plugin_name:
+                        root.removeChild(child)
+                        break
 
-            self.plugin_items = [(name, checkbox) for name, checkbox in self.plugin_items if name != plugin_name]
+            # Update the main list heart label
+            if 'heart_label' in self.plugin_items[plugin_name]:
+                self.plugin_items[plugin_name]['heart_label'].setText("🤍")
+
+            del self.plugin_items[plugin_name]['favorite_checkbox']
+            del self.plugin_items[plugin_name]['favorite_heart_label']
 
     def open_file_dialog(self):
         file_dialog = QFileDialog()
@@ -471,7 +452,7 @@ class MainWindow(QMainWindow):
             self.analyze_button.setVisible(True)
 
     def analyze_memory_dump(self):
-        selected_plugins = [plugin_name for plugin_name, checkbox in self.plugin_items if checkbox.isChecked()]
+        selected_plugins = [plugin_name for plugin_name, items in self.plugin_items.items() if items['checkbox'].isChecked()]
         if not selected_plugins:
             print("No plugins selected.")
             self.output_text_edit.append("No plugins selected.")
@@ -504,5 +485,3 @@ if __name__ == "__main__":
     window = MainWindow()
     window.show()
     sys.exit(app.exec_())
-
-

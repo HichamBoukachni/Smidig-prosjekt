@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, \
     QPushButton, QSizePolicy, QSpacerItem
@@ -13,8 +14,18 @@ class MainWindow(QMainWindow):
         # Construct the path to the target Python file
         target_file = os.path.join(current_dir, "Plugins.py")
         # subprocess.Popen(['python', target_file])
-        # Bytt ut gjeldende prosess med StartSide.py
+        # Bytt ut gjeldende prosess med target_file
         os.execl(sys.executable, sys.executable, target_file)
+
+    def profile_button_clicked(self):
+        # Get the directory of the current script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # Construct the path to the target Python file
+        target_file = os.path.join(current_dir, "mainlogin.py")
+        # Åpner i nytt vindu
+        subprocess.Popen(['python', target_file])
+        # Bytt ut gjeldende prosess med target_file
+        # os.execl(sys.executable, sys.executable, target_file)
 
     def __init__(self):
         super().__init__()
@@ -65,11 +76,14 @@ class MainWindow(QMainWindow):
         profilesetting_layout = QHBoxLayout()
         profile_btn = QPushButton()
         profile_btn.setIcon(QIcon("images/_profile.png"))
+        profile_btn.setStyleSheet("background-color: transparent;")
         profile_btn.setFixedSize(40, 40)
         profile_btn.setIconSize(profile_btn.size())
+        profile_btn.clicked.connect(self.profile_button_clicked)
 
         setting_btn = QPushButton()
         setting_btn.setIcon(QIcon("images/_settings.png"))
+        setting_btn.setStyleSheet("background-color: transparent;")
         setting_btn.setFixedSize(40, 40)
         setting_btn.setIconSize(setting_btn.size())
 

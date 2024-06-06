@@ -1,9 +1,9 @@
 import sys
-import mysql.connector  # Import MySQL connector to connect to the database
+# import mysql.connector  # Import MySQL connector to connect to the database
 from PyQt5.QtWidgets import (  # Import necessary PyQt5 widgets for the GUI
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpacerItem, QSizePolicy, QFrame, QMessageBox
 )
-from PyQt5.QtGui import QFont, QColor  # Import PyQt5 modules for fonts and colors
+from PyQt5.QtGui import QFont, QColor, QIcon  # Import PyQt5 modules for fonts and colors
 from PyQt5.QtCore import Qt  # Import Qt core module for alignment constants
 import bcrypt  # Import bcrypt for password hashing
 
@@ -17,10 +17,12 @@ class LoginWindow(QWidget):
         main_layout = QVBoxLayout()  # Create the main vertical layout
 
         # Grey square at the top-right corner
-        top_right_square = QLabel(self)
+        top_right_square = QPushButton()
+        top_right_square.setIcon(QIcon("images/_closeicon.png"))
+        top_right_square.setStyleSheet("background-color: transparent;")
         top_right_square.setFixedSize(15, 15)  # Set fixed size for the square
-        top_right_square.setStyleSheet("background-color: gray;")  # Set background color
-        top_right_square.setAlignment(Qt.AlignCenter)  # Center align the square
+        # top_right_square.setAlignment(Qt.AlignCenter)  # Center align the square
+        top_right_square.clicked.connect(self.close) # Lukker vinduet når man trykker på knappen
 
         # Layout to align the square to the right
         top_right_layout = QHBoxLayout()
@@ -34,8 +36,15 @@ class LoginWindow(QWidget):
 
         # Grey square at the top in the center
         center_square = QLabel(self)
-        center_square.setFixedSize(25, 25)  # Set fixed size for the square
-        center_square.setStyleSheet("background-color: gray;")  # Set background color
+        center_square.setFixedSize(75, 75)  # Set fixed size for the square
+        center_square.setStyleSheet("""background-color: transparent; 
+                                        image: url(images/_profile.png); 
+                                        border-style: solid; 
+                                        border-color: rgb(217, 111, 51); 
+                                        border-width: 2px;
+                                        border-radius: 37px;
+                                        padding: 8px;
+                                    """)  # Set image and border
         center_square.setAlignment(Qt.AlignCenter)  # Center align the square
         center_square_layout = QHBoxLayout()
         center_square_layout.addStretch(1)  # Add stretchable space to the left
@@ -51,7 +60,7 @@ class LoginWindow(QWidget):
         line = QFrame()
         line.setFrameShape(QFrame.HLine)  # Set the frame shape to horizontal line
         line.setFrameShadow(QFrame.Sunken)  # Set the frame shadow
-        line.setStyleSheet("background-color: #D96F33;")  # Set background color
+        line.setStyleSheet("background-color: rgb(217, 111, 51);")  # Set background color
         main_layout.addWidget(line)  # Add the line to the main layout
 
         # Email input
@@ -85,8 +94,8 @@ class LoginWindow(QWidget):
         sign_in_button.setFixedWidth(button_width)  # Set fixed width
         sign_in_button.setStyleSheet("""
             QPushButton {
-                background-color: #D96F33; 
-                color: black; 
+                background-color: rgb(217, 111, 51); 
+                color: rgb(28, 37, 48); 
                 margin-top: 10px;
                 font-size: 16px;
                 border-radius: 5px;
@@ -129,8 +138,8 @@ class LoginWindow(QWidget):
         sign_up_button.setFixedWidth(button_width)  # Set fixed width
         sign_up_button.setStyleSheet("""
             QPushButton {
-                background-color: #D96F33; 
-                color: black; 
+                background-color: rgb(217, 111, 51); 
+                color: rgb(28, 37, 48); 
                 margin-top: 10px;
                 font-size: 16px;
                 border-radius: 5px;
@@ -147,13 +156,15 @@ class LoginWindow(QWidget):
         sign_up_layout.addStretch(1)  # Add stretchable space to the right
         main_layout.addLayout(sign_up_layout)  # Add the layout to the main layout
 
+        # Main window
         self.setLayout(main_layout)  # Set the main layout
         self.setWindowTitle('Login')  # Set the window title
         self.setGeometry(600, 300, 400, 500)  # Set the window geometry
         self.setAutoFillBackground(True)  # Enable auto fill background
-        palette = self.palette()
-        palette.setColor(self.backgroundRole(), QColor("#2A3541"))  # Set background color
-        self.setPalette(palette)  # Apply the palette
+        self.setStyleSheet("""background-color: rgb(28, 37, 48); 
+                              color: rgb(177, 188, 200); 
+                            """)
+        self.setWindowFlags(Qt.FramelessWindowHint) # Tar vekk den hvite greia på toppen
 
     def handle_login(self):
         email = self.email_input.text()  # Get the text from the email input

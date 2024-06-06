@@ -1,9 +1,10 @@
 import subprocess
 import sys
 import os
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QGroupBox, QPushButton, QVBoxLayout, QSizePolicy, QFileDialog
+from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QGroupBox, QPushButton, QVBoxLayout, QSizePolicy, \
+    QFileDialog, QLabel
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
@@ -39,8 +40,11 @@ class GuiExample(QWidget):
                                "border: 2px solid rgb(217, 111, 51) ;"
                                "border-radius: 10px; }")
         lftBox = QHBoxLayout() #This takes the base settings for the boxes set in main_layout
+
+
         groupBox.setLayout(lftBox)
         groupBox.setFixedWidth(300)
+
         return groupBox
 
     #This is the middle box, here is going to show the graphs etc.
@@ -51,6 +55,14 @@ class GuiExample(QWidget):
                                "border-radius: 10px; }")
         midBox = QHBoxLayout() #This takes the base settings for the boxes set in main_layout
         groupBox.setLayout(midBox)
+
+        image_label = QLabel()
+        pixmap = QPixmap(os.path.join(os.getcwd(), 'images/img.png'))
+        image_label.setPixmap(pixmap)
+        image_label.setAlignment(Qt.AlignCenter)
+
+        midBox.addWidget(image_label)
+
         return groupBox
 
     #Here is the right box, where contains the buttons and everything else which needs to be pressed
@@ -137,7 +149,7 @@ class GuiExample(QWidget):
     #Opening the file explorer
     def calc_n_save(self):
 
-        result = self.simple_calc
+        result = self.simple_calc()
 
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
@@ -145,16 +157,23 @@ class GuiExample(QWidget):
         file_dialog.setAcceptMode(QFileDialog.AcceptSave)
 
         if file_dialog.exec():
-            file_path = file_dialog.selectedFiles()
+            file_path = file_dialog.selectedFiles()[0]
+            if not file_path.endswith('.pdf'):
+                file_path += '.pdf'
+            print(f"Saving PDF to {file_path}")
             self.create_pdf(file_path, result)
 
     def simple_calc(self):
-        return 32
+        return 42
 
     def create_pdf(self, file_path, result):
-        c = canvas.Canvas(file_path, pagesize=letter)
-        c.drawString(100, 750, f"The result of the calc is: {result}")
-        c.save()
+        try:
+            c = canvas.Canvas(file_path, pagesize=letter)
+            c.drawString(100, 750, f"The result of the calc is: {result}")
+            c.save()
+            print(f"Pdf has been saved to {file_path}")
+        except Exception as e:
+            print(f"failed to create pdf file: {e}")
 
     #This lets you open the settings window
     def run_settings(self):

@@ -1,9 +1,12 @@
+import subprocess
 import sys
 import os
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QGroupBox, QPushButton, QLabel, QVBoxLayout, QSizePolicy
-
+from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QGroupBox, QPushButton, QVBoxLayout, QSizePolicy, \
+    QFileDialog, QLabel
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 class GuiExample(QWidget):
     def __init__(self):
@@ -37,8 +40,11 @@ class GuiExample(QWidget):
                                "border: 2px solid rgb(217, 111, 51) ;"
                                "border-radius: 10px; }")
         lftBox = QHBoxLayout() #This takes the base settings for the boxes set in main_layout
+
+
         groupBox.setLayout(lftBox)
         groupBox.setFixedWidth(300)
+
         return groupBox
 
     #This is the middle box, here is going to show the graphs etc.
@@ -49,6 +55,14 @@ class GuiExample(QWidget):
                                "border-radius: 10px; }")
         midBox = QHBoxLayout() #This takes the base settings for the boxes set in main_layout
         groupBox.setLayout(midBox)
+
+        image_label = QLabel()
+        pixmap = QPixmap(os.path.join(os.getcwd(), 'images/img.png'))
+        image_label.setPixmap(pixmap)
+        image_label.setAlignment(Qt.AlignCenter)
+
+        midBox.addWidget(image_label)
+
         return groupBox
 
     #Here is the right box, where contains the buttons and everything else which needs to be pressed
@@ -84,7 +98,7 @@ class GuiExample(QWidget):
 
             pixmap = QPixmap(full_path)
 
-            pixmap = pixmap.scaled(30, 30)  # this just resizes the pixmap to 50x50
+            pixmap = pixmap.scaled(30, 30)  #This just resizes the pixmap to 50x50
 
             button.setIcon(QIcon(pixmap))
 
@@ -107,13 +121,13 @@ class GuiExample(QWidget):
         groupBox.setLayout(rgtBox)
         return groupBox
 
-    #this just defines what the buttons do when they are clicked.
+    #this just defines what the buttons do when they are clicked. right now only 1,2 and 10 are in use
     def on_button_clicked(self, button_number):
         print(f"Button {button_number} clicked")
         if button_number == 1:
-            print("1")
+            self.run_settings() #Opens settings
         if button_number == 2:
-            print("2")
+            self.calc_n_save() #lage en enkel cal til pdf fil
         if button_number == 3:
             print("3")
         if button_number == 4:
@@ -129,9 +143,48 @@ class GuiExample(QWidget):
         if button_number == 9:
             print("9")
         if button_number == 10:
-            print("10")
+            self.run_start_side() #Goes back to the main menu
 
+    #This function is for open the file explorer, while it is supposed to download the graph but right now its only for
+    #Opening the file explorer
+    def calc_n_save(self):
 
+        result = self.simple_calc()
+
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        file_dialog = QFileDialog(self, "Save PDF", "" "PDF Files (*.pdf)", options=options)
+        file_dialog.setAcceptMode(QFileDialog.AcceptSave)
+
+        if file_dialog.exec():
+            file_path = file_dialog.selectedFiles()[0]
+            if not file_path.endswith('.pdf'):
+                file_path += '.pdf'
+            print(f"Saving PDF to {file_path}")
+            self.create_pdf(file_path, result)
+
+    def simple_calc(self):
+        return 42
+
+    def create_pdf(self, file_path, result):
+        try:
+            c = canvas.Canvas(file_path, pagesize=letter)
+            c.drawString(100, 750, f"The result of the calc is: {result}")
+            c.save()
+            print(f"Pdf has been saved to {file_path}")
+        except Exception as e:
+            print(f"failed to create pdf file: {e}")
+
+    #This lets you open the settings window
+    def run_settings(self):
+        subprocess.run(["python", "settings_window.py"])
+
+    #This lets you open the window, while it is supposed to close this file but right now it just crashes dont know why
+    def run_start_side(self):
+        subprocess.run(["python", "StartSide(Christina).py"])
+        QApplication.quit()
+
+#kjører programmet.
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = GuiExample()

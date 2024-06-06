@@ -1,50 +1,90 @@
+import os
 import sys
 from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QMessageBox, QHBoxLayout, QFrame, QDesktopWidget)
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import Qt
 import bcrypt  # Import bcrypt for password hashing
-import mysql.connector  # Import MySQL connector to connect to the database
+#import mysql.connector  # Import MySQL connector to connect to the database
 
 # Define the RegisterForm class, inheriting from QWidget
 class RegisterForm(QWidget):
+
     def __init__(self):
         super().__init__()
         self.initUI()  # Call the method to initialize the UI
 
+    def back_button_clicked(self):
+        # Get the directory of the current script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # Construct the path to the target Python file
+        target_file = os.path.join(current_dir, "mainlogin.py")
+        # subprocess.Popen(['python', target_file])
+        # Bytt ut gjeldende prosess med target_file
+        os.execl(sys.executable, sys.executable, target_file)
+
+    def resizeEvent(self, event):
+        # Update the border_frame size to match the window size
+        self.border_frame.setGeometry(self.rect())
+        super().resizeEvent(event)
+
     def initUI(self):
         self.setWindowTitle('Opprett konto')  # Set the window title
         self.setFixedSize(400, 500)  # Set a fixed window size
-        self.setStyleSheet('background-color: #2c2f38; color: #ffffff;')  # Set background and text color
+        self.setStyleSheet("""background-color: rgb(28, 37, 48); 
+                              color: rgb(177, 188, 200); 
+                            """)  # Set background and text color
         self.setWindowFlags(Qt.FramelessWindowHint)  # Remove window title bar
 
         self.center()  # Center the window upon initialization
 
         main_layout = QVBoxLayout()  # Create the main vertical layout
 
+        # Create a QFrame to add the border
+        self.border_frame = QFrame(self)
+        self.border_frame.setStyleSheet("border: 2px solid rgb(42, 53, 65);")
+        self.border_frame.setLineWidth(2)
+
+        # Make QFrame the same size as the main window
+        self.border_frame.setGeometry(self.rect())
+
+        # Create a layout inside the border frame
+        layout = QVBoxLayout(self.border_frame)
+        self.border_frame.setLayout(layout)
+
         top_layout = QHBoxLayout()  # Create a horizontal layout for the top section
 
-        # Gray box without back button
-        self.back_box = QLabel(self)
-        back_pixmap = QPixmap(50, 50)
-        back_pixmap.fill(Qt.gray)  # Placeholder color for the back box
-        self.back_box.setPixmap(back_pixmap)
-        self.back_box.setAlignment(Qt.AlignCenter)  # Center align the box
-
+        # Back button taking you back to the mainlogin.py
+        self.back_button = QPushButton(self)
+        self.back_button.setIcon(QIcon("images/_navarrowleft.png"))
+        self.back_button.setStyleSheet("background-color: transparent; alignment: top-right;")
+        self.back_button.setFixedSize(22, 22)
         top_layout.addStretch()  # Add stretchable space to the left
-        top_layout.addWidget(self.back_box)  # Add the back box widget
+        top_layout.addWidget(self.back_button)
+        self.back_button.clicked.connect(self.back_button_clicked)
 
         main_layout.addLayout(top_layout)  # Add the top layout to the main layout
 
         layout = QVBoxLayout()  # Create another vertical layout for form elements
 
         # Profile picture icon
-        self.profile_icon = QLabel(self)
-        pixmap = QPixmap(100, 100)
-        pixmap.fill(Qt.gray)  # Placeholder color for the profile picture
-        self.profile_icon.setPixmap(pixmap)
-        self.profile_icon.setAlignment(Qt.AlignCenter)  # Center align the icon
-        layout.addWidget(self.profile_icon)
-        layout.addSpacing(40)  # Increased vertical spacing
+        profile_icon = QLabel(self)
+        profile_icon.setFixedSize(75, 75)
+        profile_icon.setStyleSheet("""
+                                        background-color: transparent;
+                                        image: url(images/_profile.png);
+                                        border-style: solid; 
+                                        border-color: rgb(217, 111, 51); 
+                                        border-width: 2px;
+                                        border-radius: 37px;
+                                        padding: 8px;
+                                    """)
+        profile_icon.setAlignment(Qt.AlignCenter)  # Center align the icon
+        center_square_layout = QHBoxLayout()
+        center_square_layout.addStretch(1)
+        center_square_layout.addWidget(profile_icon)
+        center_square_layout.addStretch(1)
+        layout.addLayout(center_square_layout)
+        layout.addSpacing(20) # Increased vertical spacing
 
         # Horizontal line
         self.line = QFrame()
@@ -122,7 +162,7 @@ class RegisterForm(QWidget):
         return """
         QPushButton {
             background-color: #e39443;
-            color: #ffffff;
+            color: rgb(28, 37, 48);
             border-radius: 5px;
             padding: 5px 10px;
             font-size: 14px;
@@ -172,6 +212,7 @@ class RegisterForm(QWidget):
         except mysql.connector.Error as err:
             QMessageBox.critical(self, "Databasefeil", f"Kunne ikke koble til databasen: {err}")  # Show error message if database connection fails
             return
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)  # Create the application

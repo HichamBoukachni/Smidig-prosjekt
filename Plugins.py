@@ -1,12 +1,11 @@
 import sys
 import os
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QPushButton,
-                             QProgressBar, QComboBox, QWidget, QLabel, QTreeWidget, QTreeWidgetItem, QLineEdit,
-                             QFileDialog, QCheckBox, QTextEdit, QSizePolicy)
-from PyQt5.QtGui import QIcon, QPixmap
+                             QProgressBar, QComboBox, QWidget, QLabel, QTreeWidget, QTreeWidgetItem,
+                             QLineEdit, QFileDialog, QCheckBox, QTextEdit, QSizePolicy)
+from PyQt5.QtGui import QIcon, QPixmap, QFont
 from PyQt5.QtCore import Qt, QSize, QThread, pyqtSignal
 import subprocess
-
 
 class Worker(QThread):
     result_ready = pyqtSignal(str)
@@ -29,7 +28,6 @@ class Worker(QThread):
         lines = text.splitlines()
         filtered_lines = [line for line in lines if not line.startswith("Progress:")]
         return "\n".join(filtered_lines)
-
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -82,7 +80,7 @@ class MainWindow(QMainWindow):
         self.sidebar_layout.addWidget(self.favorites_list)
 
         # Track which plugins are in favorites
-        self.favorites = set()
+        self.favorites = {}
 
         # Main content area
         self.content_layout = QVBoxLayout()
@@ -244,23 +242,24 @@ class MainWindow(QMainWindow):
         item_widget = QWidget()
         item_layout = QHBoxLayout(item_widget)
         item_layout.setContentsMargins(0, 0, 0, 0)
+
+        heart_label = QLabel("🤍")
+        heart_label.setFont(QFont("Arial", 16))  # Adjust the font size as needed
+        heart_label.mousePressEvent = lambda event, p=plugin_name: self.toggle_favorite(p, heart_label)
+        item_layout.addWidget(heart_label)
+
         item_label = QLabel(plugin_name)
+        item_label.setObjectName("plugin_label")
         item_layout.addWidget(item_label)
         checkbox = QCheckBox(self)
         item_layout.addWidget(checkbox)
 
-        # Add heart button for favorites
-        heart_button = QPushButton("❤️")
-        heart_button.setFlat(True)
-        heart_button.setStyleSheet("color: white;")
-        heart_button.clicked.connect(lambda: self.toggle_favorite(plugin_name, heart_button, checkbox))
-        item_layout.addWidget(heart_button)
-
         item_widget.setLayout(item_layout)
+        item_layout.setAlignment(Qt.AlignLeft)  # Align items to the left
 
         tree_item = QTreeWidgetItem(parent_item)
         self.plugins_list.setItemWidget(tree_item, 0, item_widget)
-        self.plugin_items.append((plugin_name, checkbox))
+        self.plugin_items.append((plugin_name, checkbox, heart_label))
 
     def filter_plugins(self, text):
         text = text.lower()
@@ -270,14 +269,15 @@ class MainWindow(QMainWindow):
             for i in range(parent_item.childCount()):
                 child_item = parent_item.child(i)
                 widget = self.plugins_list.itemWidget(child_item, 0)
-                label = widget.findChild(QLabel)
-                if text in label.text().lower():
-                    child_item.setHidden(False)
-                    parent_item.setHidden(False)
-                    parent_item.setExpanded(True)
-                    parent_has_visible_child = True
-                else:
-                    child_item.setHidden(True)
+                if widget is not None:
+                    label = widget.findChild(QLabel, "plugin_label")
+                    if label and text in label.text().lower():
+                        child_item.setHidden(False)
+                        parent_item.setHidden(False)
+                        parent_item.setExpanded(True)
+                        parent_has_visible_child = True
+                    else:
+                        child_item.setHidden(True)
             parent_item.setHidden(not parent_has_visible_child)
 
     def change_plugin_list(self, index):
@@ -286,53 +286,51 @@ class MainWindow(QMainWindow):
             self.plugins_list.show()
         else:  # Favorites
             self.plugins_list.hide()
+            self.favorites_list.clear()
+            for plugin_name in self.favorites:
+                parent_item = QTreeWidgetItem(self.favorites_list)
+                widget = self.create_plugin_widget(plugin_name)
+                self.favorites_list.setItemWidget(parent_item, 0, widget)
             self.favorites_list.show()
 
-    def toggle_favorite(self, plugin_name, button, original_checkbox):
+    def toggle_favorite(self, plugin_name, heart_label):
         if plugin_name in self.favorites:
-            self.remove_from_favorites(plugin_name)
-            button.setText("❤️")
+            del self.favorites[plugin_name]
+            heart_label.setText("🤍")
         else:
-            self.add_to_favorites(plugin_name, original_checkbox)
-            button.setText("💔")
+            self.favorites[plugin_name] = True
+            heart_label.setText("🧡")
+        self.update_favorites_list()
 
-    def add_to_favorites(self, plugin_name, original_checkbox):
-        if plugin_name not in self.favorites:
-            self.favorites.add(plugin_name)
-            favorite_item = QTreeWidgetItem(self.favorites_list)
+    def update_favorites_list(self):
+        self.favorites_list.clear()
+        for plugin_name in self.favorites:
+            parent_item = QTreeWidgetItem(self.favorites_list)
+            widget = self.create_plugin_widget(plugin_name)
+            self.favorites_list.setItemWidget(parent_item, 0, widget)
 
-            item_widget = QWidget()
-            item_layout = QHBoxLayout(item_widget)
-            item_layout.setContentsMargins(0, 0, 0, 0)
-            item_label = QLabel(plugin_name)
-            item_layout.addWidget(item_label)
-            checkbox = QCheckBox(self)
-            checkbox.setChecked(original_checkbox.isChecked())
-            item_layout.addWidget(checkbox)
+        for plugin_name, checkbox, heart_label in self.plugin_items:
+            heart_label.setText("🧡" if plugin_name in self.favorites else "🤍")
 
-            # Add heart button for removal from favorites
-            heart_button = QPushButton("💔")
-            heart_button.setFlat(True)
-            heart_button.setStyleSheet("color: white;")
-            heart_button.clicked.connect(lambda: self.toggle_favorite(plugin_name, heart_button, checkbox))
-            item_layout.addWidget(heart_button)
+    def create_plugin_widget(self, plugin_name):
+        item_widget = QWidget()
+        item_layout = QHBoxLayout(item_widget)
+        item_layout.setContentsMargins(0, 0, 0, 0)
 
-            item_widget.setLayout(item_layout)
-            self.favorites_list.setItemWidget(favorite_item, 0, item_widget)
+        heart_label = QLabel("🤍" if plugin_name not in self.favorites else "🧡")
+        heart_label.setFont(QFont("Arial", 16))  # Adjust the font size as needed
+        heart_label.mousePressEvent = lambda event, p=plugin_name: self.toggle_favorite(p, heart_label)
+        item_layout.addWidget(heart_label)
 
-            self.plugin_items.append((plugin_name, checkbox))
+        item_label = QLabel(plugin_name)
+        item_label.setObjectName("plugin_label")
+        item_layout.addWidget(item_label)
+        checkbox = QCheckBox(self)
+        item_layout.addWidget(checkbox)
 
-    def remove_from_favorites(self, plugin_name):
-        if plugin_name in self.favorites:
-            self.favorites.remove(plugin_name)
-            root = self.favorites_list.invisibleRootItem()
-            for i in range(root.childCount()):
-                child = root.child(i)
-                if child.text(0) == plugin_name:
-                    root.removeChild(child)
-                    break
-
-            self.plugin_items = [(name, checkbox) for name, checkbox in self.plugin_items if name != plugin_name]
+        item_widget.setLayout(item_layout)
+        item_layout.setAlignment(Qt.AlignLeft)  # Align items to the left
+        return item_widget
 
     def open_file_dialog(self):
         file_dialog = QFileDialog()
@@ -345,7 +343,7 @@ class MainWindow(QMainWindow):
             self.analyze_button.setVisible(True)
 
     def analyze_memory_dump(self):
-        selected_plugins = [plugin_name for plugin_name, checkbox in self.plugin_items if checkbox.isChecked()]
+        selected_plugins = [plugin_name for plugin_name, checkbox, heart_label in self.plugin_items if checkbox.isChecked()]
         if not selected_plugins:
             print("No plugins selected.")
             self.output_text_edit.append("No plugins selected.")
@@ -362,7 +360,6 @@ class MainWindow(QMainWindow):
     def display_result(self, result):
         self.output_text_edit.clear()
         self.output_text_edit.append(result)
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

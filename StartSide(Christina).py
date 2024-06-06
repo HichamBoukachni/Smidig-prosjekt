@@ -34,6 +34,10 @@ class MainWindow(QMainWindow):
         # Bytt ut gjeldende prosess med target_file
         os.execl(sys.executable, sys.executable, target_file)
 
+    def command_button_clicked(self):
+            # Open the command prompt
+            subprocess.run(["start", "cmd", "/k", "cd volatility3"], shell=True)
+
 
     def __init__(self):
         super().__init__()
@@ -180,6 +184,8 @@ class MainWindow(QMainWindow):
 
             if tooltip == "Plugin":
                 button.clicked.connect(self.plugin_button_clicked)
+            elif tooltip == "Command":
+                button.clicked.connect(self.command_button_clicked)
 
             icon_layout.addWidget(button)
 

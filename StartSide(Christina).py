@@ -1,3 +1,5 @@
+import os
+import subprocess
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, \
     QPushButton, QSizePolicy, QSpacerItem
@@ -5,13 +7,33 @@ from PyQt5.QtGui import QIcon, QPixmap, QFont
 from PyQt5.QtCore import Qt, QSize
 
 class MainWindow(QMainWindow):
+
+    def plugin_button_clicked(self):
+        # Get the directory of the current script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # Construct the path to the target Python file
+        target_file = os.path.join(current_dir, "Plugins.py")
+        # subprocess.Popen(['python', target_file])
+        # Bytt ut gjeldende prosess med target_file
+        os.execl(sys.executable, sys.executable, target_file)
+
+    def profile_button_clicked(self):
+        # Get the directory of the current script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # Construct the path to the target Python file
+        target_file = os.path.join(current_dir, "mainlogin.py")
+        # Åpner i nytt vindu
+        subprocess.Popen(['python', target_file])
+        # Bytt ut gjeldende prosess med target_file
+        # os.execl(sys.executable, sys.executable, target_file)
+
     def __init__(self):
         super().__init__()
 
         # Main window styling
         self.setWindowTitle("Volatility3")
         self.resize(800, 600)
-        self.setStyleSheet("background-color:  rgb(18, 25, 33);"
+        self.setStyleSheet("background-color:  rgb(28, 37, 48);"
                            "color: rgb(177, 188, 200);")
 
         # Main layout
@@ -25,7 +47,7 @@ class MainWindow(QMainWindow):
         dropdown.addItems(["Linux", "Windows", "macOS"])
         dropdown.setStyleSheet("""
                                 QComboBox { 
-                                    background-color: rgb(59, 73, 89);
+                                    background-color: rgb(42, 53, 65);
                                     color: rgb(230, 232, 234); 
                                     padding: 5px; 
                                     font-size: 20px;
@@ -54,11 +76,14 @@ class MainWindow(QMainWindow):
         profilesetting_layout = QHBoxLayout()
         profile_btn = QPushButton()
         profile_btn.setIcon(QIcon("images/_profile.png"))
+        profile_btn.setStyleSheet("background-color: transparent;")
         profile_btn.setFixedSize(40, 40)
         profile_btn.setIconSize(profile_btn.size())
+        profile_btn.clicked.connect(self.profile_button_clicked)
 
         setting_btn = QPushButton()
         setting_btn.setIcon(QIcon("images/_settings.png"))
+        setting_btn.setStyleSheet("background-color: transparent;")
         setting_btn.setFixedSize(40, 40)
         setting_btn.setIconSize(setting_btn.size())
 
@@ -115,6 +140,7 @@ class MainWindow(QMainWindow):
                                         """)
 
         # Buttons images in a list
+
         icons = [
             (QPixmap("images/_cmd.png"), "Command"),
             (QPixmap("images/_plugin.png"), "Plugin"),
@@ -129,7 +155,7 @@ class MainWindow(QMainWindow):
             button.setToolTip(tooltip)
             button.setStyleSheet("""
                                  QPushButton { 
-                                    background-color: rgb(59, 73, 89); 
+                                    background-color: rgb(42, 53, 65); 
                                     border-style: solid; 
                                     border-width: 2px;
                                     border-radius: 15px;
@@ -143,46 +169,14 @@ class MainWindow(QMainWindow):
                                  }
                                  """)
 
+            if tooltip == "Plugin":
+                button.clicked.connect(self.plugin_button_clicked)
+
             icon_layout.addWidget(button)
 
         # Spacer to push buttons upwards
         main_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
-        """
-        # Buttons second version
-        cmd_btn = QPushButton()
-        cmd_btn.setIcon(QIcon("images/_cmd.png"))
-        cmd_btn.setFixedSize(100, 100)
-        cmd_btn.setIconSize(cmd_btn.size())
-        cmd_btn.setStyleSheet("background-color: rgb(59, 73, 89); 
-                                    border-style: solid; 
-                                    border-width: 2px;
-                                    border-radius: 15px;
-                                    broder-color: rgb(217, 111, 51);")
-        icon_layout.addWidget(cmd_btn)
-
-        plugin_btn = QPushButton()
-        plugin_btn.setIcon(QIcon("images/_plugin.png"))
-        plugin_btn.setFixedSize(100, 100)
-        plugin_btn.setIconSize(plugin_btn.size())
-        plugin_btn.setStyleSheet("background-color: rgb(59, 73, 89); 
-                                    border-style: solid; 
-                                    border-width: 2px;
-                                    border-radius: 15px;
-                                    broder-color: rgb(217, 111, 51);")
-        icon_layout.addWidget(plugin_btn)
-
-        result_btn = QPushButton()
-        result_btn.setIcon(QIcon("images/_results.png"))
-        result_btn.setFixedSize(100, 100)
-        result_btn.setIconSize(result_btn.size())
-        result_btn.setStyleSheet("background-color: rgb(59, 73, 89); 
-                                    border-style: solid; 
-                                    border-width: 2px;
-                                    border-radius: 15px;
-                                    broder-color: rgb(217, 111, 51);")
-        icon_layout.addWidget(result_btn)
-        """
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

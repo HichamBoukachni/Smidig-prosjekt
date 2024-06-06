@@ -4,7 +4,8 @@ import os
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QGroupBox, QPushButton, QVBoxLayout, QSizePolicy, QFileDialog
-
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 class GuiExample(QWidget):
     def __init__(self):
@@ -114,7 +115,7 @@ class GuiExample(QWidget):
         if button_number == 1:
             self.run_settings() #Opens settings
         if button_number == 2:
-            self.open_download() #Opens file explorer
+            self.calc_n_save() #lage en enkel cal til pdf fil
         if button_number == 3:
             print("3")
         if button_number == 4:
@@ -134,15 +135,27 @@ class GuiExample(QWidget):
 
     #This function is for open the file explorer, while it is supposed to download the graph but right now its only for
     #Opening the file explorer
-    def open_download(self):
+    def calc_n_save(self):
+
+        result = self.simple_calc
+
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        file_dialog = QFileDialog(self, "Select Files", "", "all files (*);; Python Files (*.py)", options=options)
-        file_dialog.setFileMode(QFileDialog.ExistingFiles)
+        file_dialog = QFileDialog(self, "Save PDF", "" "PDF Files (*.pdf)", options=options)
+        file_dialog.setAcceptMode(QFileDialog.AcceptSave)
 
         if file_dialog.exec():
-            file_names = file_dialog.selectedFiles()
-            print("Seleted files:", file_names)
+            file_path = file_dialog.selectedFiles()
+            self.create_pdf(file_path, result)
+
+    def simple_calc(self):
+        return 32
+
+    def create_pdf(self, file_path, result):
+        c = canvas.Canvas(file_path, pagesize=letter)
+        c.drawString(100, 750, f"The result of the calc is: {result}")
+        c.save()
+
     #This lets you open the settings window
     def run_settings(self):
         subprocess.run(["python", "settings_window.py"])

@@ -1,9 +1,10 @@
 import sys
 import os
+
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QPushButton,
                              QProgressBar, QComboBox, QWidget, QLabel, QTreeWidget, QTreeWidgetItem, QLineEdit,
-                             QFileDialog, QCheckBox, QTextEdit, QSizePolicy)
-from PyQt5.QtGui import QIcon, QPixmap
+                             QFileDialog, QCheckBox, QTextEdit, QSizePolicy, QSplitter, QFrame)
+from PyQt5.QtGui import QIcon, QPixmap, QFont
 from PyQt5.QtCore import Qt, QSize, QThread, pyqtSignal
 import subprocess
 
@@ -51,12 +52,13 @@ class MainWindow(QMainWindow):
         # Search bar
         self.search_layout = QHBoxLayout()
         self.search_icon = QLabel(self)
-        search_pixmap = QPixmap(32, 32)
-        search_pixmap.fill(Qt.white)  # Placeholder for actual search icon
-        self.search_icon.setPixmap(search_pixmap)
+        search_pixmap = QPixmap("images/_search.png")
+        scaled_pixmap = search_pixmap.scaled(14, 14)
+        self.search_icon.setPixmap(scaled_pixmap)
         self.search_layout.addWidget(self.search_icon)
         self.search_bar = QLineEdit(self)
         self.search_bar.setPlaceholderText("Search")
+        self.search_bar.setObjectName("search_bar")
         self.search_bar.textChanged.connect(self.filter_plugins)
         self.search_layout.addWidget(self.search_bar)
         self.sidebar_layout.addLayout(self.search_layout)
@@ -96,75 +98,115 @@ class MainWindow(QMainWindow):
 
         # Control buttons next to progress bar
         self.view_result_button = QPushButton("View Result", self)
+        self.view_result_button.setObjectName("view_result_button")
         self.progress_bar_layout.addWidget(self.view_result_button)
 
-        # Adding play, pause, and stop buttons with icons
-        icon_size = 24
-        self.play_button = QPushButton(self)
-        self.play_button.setIcon(QIcon(QPixmap(icon_size, icon_size)))
-        self.progress_bar_layout.addWidget(self.play_button)
+        # Add the button with icon
+        self.back_button = QPushButton(self)
+        icon_path = "images/_navarrowleft.png"
+        self.back_button.setIcon(QIcon(icon_path))
+        icon_size = 32  # Adjust the size to make the icon smaller
+        self.back_button.setIconSize(QSize(icon_size, icon_size))
+        self.back_button.setFixedSize(icon_size + 10, icon_size + 10)  # Add some padding around the icon
+        self.back_button.setStyleSheet("background-color: transparent; border: none;")
+        self.progress_bar_layout.addWidget(self.back_button)
+        # Connect the button click to the function
+        self.back_button.clicked.connect(self.back_button_clicked)
 
-        self.pause_button = QPushButton(self)
-        self.pause_button.setIcon(QIcon(QPixmap(icon_size, icon_size)))
-        self.progress_bar_layout.addWidget(self.pause_button)
-
-        self.stop_button = QPushButton(self)
-        self.stop_button.setIcon(QIcon(QPixmap(icon_size, icon_size)))
-        self.progress_bar_layout.addWidget(self.stop_button)
-
+        # Adding progress_bar_layout to content_layout
         self.content_layout.addLayout(self.progress_bar_layout)
-
-        # Placeholder Area
-        self.placeholder = QLabel(self)
-        self.placeholder.setAlignment(Qt.AlignCenter)
-        self.placeholder.setText("")
-        self.content_layout.addWidget(self.placeholder, alignment=Qt.AlignCenter)
 
         # Placeholder Image/Icon Button
         self.upload_button = QPushButton(self)
-        self.upload_button.setIcon(QIcon(r'C:\Users\hicha\Downloads\Upload orange.png'))
         self.upload_button.setIconSize(QSize(192, 192))  # Making the icon three times larger
         self.upload_button.setFlat(True)
+        self.upload_button.setFixedSize(150, 192)
         self.upload_button.clicked.connect(self.open_file_dialog)
-        self.placeholder_layout = QVBoxLayout(self.placeholder)
-        self.placeholder_layout.addWidget(self.upload_button, alignment=Qt.AlignCenter)
+        self.upload_button.setObjectName("upload_button")
+        self.content_layout.addWidget(self.upload_button, alignment=Qt.AlignCenter)
 
         # Analyze Button
         self.analyze_button = QPushButton("Analyze", self)
         self.analyze_button.setVisible(False)
         self.analyze_button.clicked.connect(self.analyze_memory_dump)
+        self.analyze_button.setObjectName("analyze_button")
         self.content_layout.addWidget(self.analyze_button)
+
+        # Placeholder Frame
+        self.placeholder_frame = QFrame(self)
+        self.placeholder_frame.setFrameShape(QFrame.Box)
+        self.placeholder_frame.setLineWidth(2)
+        self.placeholder_frame.setObjectName("placeholder_frame")
+        self.placeholder_layout = QVBoxLayout(self.placeholder_frame)
+        self.placeholder_layout.addWidget(self.upload_button, alignment=Qt.AlignCenter)
+
+        # Result Area
+        self.result_area = QWidget()
+        self.result_layout = QVBoxLayout(self.result_area)
+        self.content_layout.addWidget(self.result_area)
 
         # Output TextEdit for displaying Volatility results
         self.output_text_edit = QTextEdit(self)
         self.output_text_edit.setReadOnly(True)
         self.output_text_edit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.content_layout.addWidget(self.output_text_edit)
+        self.result_layout.addWidget(self.output_text_edit)  # Endret fra content_layout til result_layout
 
-        # Set placeholder size
-        self.placeholder.setFixedHeight(self.height() - self.progress_bar.height() - 20)
-        self.placeholder.setFixedWidth(self.width() - self.sidebar_layout.sizeHint().width() - 20)
+        # Vertical Splitter
+        self.vertical_splitter = QSplitter(Qt.Vertical)
+        self.vertical_splitter.addWidget(self.placeholder_frame)
+        self.vertical_splitter.addWidget(self.output_text_edit)
+
+        self.content_layout.addWidget(self.vertical_splitter)
 
         # Styling
         self.setStyleSheet("""
             QMainWindow {
-                background-color: #2b2b2b;
+                background-color: rgb(28, 37, 48);
             }
             QLabel {
-                color: white;
+                color: rgb(163, 174, 186);
             }
             QComboBox, QLineEdit {
-                color: white;
-                background-color: #333;
+                color: rgb(42, 53, 65);
+                background-color: rgb(255, 255, 255);
+                border-radius: 7px;
+            }
+            QComboBox::drop-down {
+                border-radius: 10px; 
+                width: 40%;
+            }
+            QComboBox::down-arrow {
+                image: url(images/_arrowdownO.png);
+                max-width: 150%; 
+                max-height: 150%;
             }
             QPushButton {
-                background-color: #444;
                 color: white;
                 border: none;
                 padding: 10px;
             }
-            QPushButton:hover {
-                background-color: #555;
+            QPushButton#upload_button {
+                background-color: rgb(42, 53, 65);
+                border-radius: 10px;
+                image: url("images/_uploadgray.png");
+            }
+            QPushButton#view_result_button {
+                background-color: rgb(42, 53, 65);
+                border-style: solid;
+                border-color: ;
+                border-radius: 10px;
+            }
+            QPushButton:hover#upload_button {
+                image: url(images/_uploadgrayhover.png);
+            }
+            QPushButton:hover#view_result_button {
+                background-color: rgb(64, 81, 99);
+            }
+            QPushButton#analyze_button {
+                margin-top: 18px;
+                margin-bottom: -4px;
+                background-color: rgb(42, 53, 65);
+                color: white;
             }
             QProgressBar {
                 background-color: #444;
@@ -172,21 +214,37 @@ class MainWindow(QMainWindow):
                 text-align: center;
             }
             QTreeWidget {
-                background-color: #333;
-                color: white;
-                border: none;
+                background-color: rgb(42, 53, 65);
+                color: white; 
+                border-radius: 10px;
             }
             QTreeWidget::item {
                 padding: 5px;
             }
             QTreeWidget::item:selected {
-                background-color: #555;
+                background-color: rgb(42, 53, 65);
                 color: white;
             }
-            QTextEdit {
-                background-color: #333;
+            QSplitter::handle {
+                background-color: rgb(28, 37, 48);
+            }
+
+            QFrame#placeholder_frame { 
+                background-color: rgb(42, 53, 65);
                 color: white;
-                border: none;
+                border: solid;
+                border-color: rgb(217, 111, 51); 
+                border-width: 2px;
+                border-radius: 10px;
+                padding: 10px;
+            }
+            QTextEdit {
+                background-color: rgb(42, 53, 65);
+                color: white;
+                border: solid;
+                border-color: rgb(217, 111, 51);
+                border-width: 2px;
+                border-radius: 10px;
                 padding: 10px;
             }
         """)
@@ -194,14 +252,14 @@ class MainWindow(QMainWindow):
         self.vol_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'volatility3', 'vol.py')
 
     def add_plugins(self):
-        self.plugin_items = []  # Store references to all plugin items for easy access
+        self.plugin_items = {}  # Use a dictionary to store references to all plugin items for easy access
         self.parent_items = []  # Store references to parent items
 
         processes_item = QTreeWidgetItem(self.plugins_list)
         processes_item.setText(0, "Processes and Threads")
         self.parent_items.append(processes_item)
 
-        for sub_item in ["windows.pslist.PsList", "windows.psscan.PsScan", "windows.threads.Threads",
+        for sub_item in ["windows.pslist.PsList", "windows.psscan.PsScan", "windows.thrdscan.ThrdScan",
                          "windows.ldrmodules.LdrModules"]:
             self.add_plugin_item(processes_item, sub_item)
 
@@ -216,54 +274,91 @@ class MainWindow(QMainWindow):
         network_item.setText(0, "Network")
         self.parent_items.append(network_item)
 
-        for sub_item in ["windows.netscan.NetScan", "windows.connections.Connections", "windows.sockets.Sockets"]:
+        for sub_item in ["windows.netscan.NetScan", "windows.netstat.NetStat"]:
             self.add_plugin_item(network_item, sub_item)
 
         registry_item = QTreeWidgetItem(self.plugins_list)
         registry_item.setText(0, "Registry")
         self.parent_items.append(registry_item)
 
-        for sub_item in ["windows.printkey.PrintKey", "windows.hivelist.HiveList", "windows.userassist.UserAssist"]:
+        for sub_item in ["windows.printkey.PrintKey", "windows.registry.hivelist.HiveList",
+                         "windows.registry.certificates.Certificates"]:
             self.add_plugin_item(registry_item, sub_item)
 
         memory_item = QTreeWidgetItem(self.plugins_list)
         memory_item.setText(0, "Memory and Handles")
         self.parent_items.append(memory_item)
 
-        for sub_item in ["windows.handles.Handles", "windows.dlllist.DllList", "windows.malfind.Malfind"]:
+        for sub_item in ["windows.handles.Handles", "windows.dlllist.DllList", "windows.malfind.Malfind",
+                         "windows.memmap.Memmap"]:
             self.add_plugin_item(memory_item, sub_item)
 
         system_info_item = QTreeWidgetItem(self.plugins_list)
         system_info_item.setText(0, "System Information")
         self.parent_items.append(system_info_item)
 
-        for sub_item in ["windows.imageinfo.ImageInfo", "windows.kdbgscan.KdbgScan", "windows.info.Info"]:
+        for sub_item in ["windows.info.Info", "windows.imageinfo.ImageInfo", "windows.kdbgscan.KdbgScan"]:
             self.add_plugin_item(system_info_item, sub_item)
+
+        # Legger til flere Vol3 plugins
+        kernel_item = QTreeWidgetItem(self.plugins_list)
+        kernel_item.setText(0, "Kernel")
+        self.parent_items.append(kernel_item)
+
+        for sub_item in ["windows.modules.Modules", "windows.ssdt.SSDT"]:
+            self.add_plugin_item(kernel_item, sub_item)
+
+        time_analysis_item = QTreeWidgetItem(self.plugins_list)
+        time_analysis_item.setText(0, "Time Analysis")
+        self.parent_items.append(time_analysis_item)
+
+        for sub_item in ["windows.timeliner.Timeliner"]:
+            self.add_plugin_item(time_analysis_item, sub_item)
+
+        additional_features_item = QTreeWidgetItem(self.plugins_list)
+        additional_features_item.setText(0, "Additional Features")
+        self.parent_items.append(additional_features_item)
+
+        for sub_item in ["windows.volshell.Volshell", "yarascan.YaraScan"]:
+            self.add_plugin_item(additional_features_item, sub_item)
 
     def add_plugin_item(self, parent_item, plugin_name):
         item_widget = QWidget()
         item_layout = QHBoxLayout(item_widget)
         item_layout.setContentsMargins(0, 0, 0, 0)
+        item_layout.setSpacing(10)  # Ensure consistent spacing
         item_label = QLabel(plugin_name)
-        item_layout.addWidget(item_label)
+        item_label.setToolTip(plugin_name)
+        item_label.setStyleSheet("QToolTip:hover { background-color: white; color: black; border: solid;}")
+        item_layout.addWidget(item_label, alignment=Qt.AlignLeft)
+
         checkbox = QCheckBox(self)
-        item_layout.addWidget(checkbox)
+        item_layout.addWidget(checkbox, alignment=Qt.AlignRight)
 
         # Add heart button for favorites
-        heart_button = QPushButton("❤️")
-        heart_button.setFlat(True)
-        heart_button.setStyleSheet("color: white;")
-        heart_button.clicked.connect(lambda: self.toggle_favorite(plugin_name, heart_button, checkbox))
-        item_layout.addWidget(heart_button)
+        heart_label = QLabel("🤍")
+        heart_label.setFont(QFont("Arial", 12))  # Adjusted font size to 12px
+        heart_label.mousePressEvent = lambda event, p=plugin_name: self.toggle_favorite(p, heart_label)
+        item_layout.addWidget(heart_label, alignment=Qt.AlignRight)
 
         item_widget.setLayout(item_layout)
 
         tree_item = QTreeWidgetItem(parent_item)
         self.plugins_list.setItemWidget(tree_item, 0, item_widget)
-        self.plugin_items.append((plugin_name, checkbox))
+        self.plugin_items[plugin_name] = {'checkbox': checkbox, 'heart_label': heart_label, 'tree_item': tree_item}
 
     def filter_plugins(self, text):
         text = text.lower()
+        if not text:
+            # Reset all items to their original state
+            for parent_item in self.parent_items:
+                parent_item.setHidden(False)
+                parent_item.setExpanded(False)  # Or True, depending on your default state
+                for i in range(parent_item.childCount()):
+                    child_item = parent_item.child(i)
+                    child_item.setHidden(False)
+            return
+
         for parent_item in self.parent_items:
             parent_item.setHidden(True)
             parent_has_visible_child = False
@@ -279,6 +374,10 @@ class MainWindow(QMainWindow):
                 else:
                     child_item.setHidden(True)
             parent_item.setHidden(not parent_has_visible_child)
+            if parent_has_visible_child:
+                parent_item.setExpanded(True)
+            else:
+                parent_item.setExpanded(False)
 
     def change_plugin_list(self, index):
         if index == 0:  # All Plugins
@@ -288,15 +387,15 @@ class MainWindow(QMainWindow):
             self.plugins_list.hide()
             self.favorites_list.show()
 
-    def toggle_favorite(self, plugin_name, button, original_checkbox):
+    def toggle_favorite(self, plugin_name, heart_label):
         if plugin_name in self.favorites:
             self.remove_from_favorites(plugin_name)
-            button.setText("❤️")
+            heart_label.setText("🤍")
         else:
-            self.add_to_favorites(plugin_name, original_checkbox)
-            button.setText("💔")
+            self.add_to_favorites(plugin_name)
+            heart_label.setText("🧡")
 
-    def add_to_favorites(self, plugin_name, original_checkbox):
+    def add_to_favorites(self, plugin_name):
         if plugin_name not in self.favorites:
             self.favorites.add(plugin_name)
             favorite_item = QTreeWidgetItem(self.favorites_list)
@@ -304,23 +403,23 @@ class MainWindow(QMainWindow):
             item_widget = QWidget()
             item_layout = QHBoxLayout(item_widget)
             item_layout.setContentsMargins(0, 0, 0, 0)
+            item_layout.setSpacing(10)  # Ensure consistent spacing
             item_label = QLabel(plugin_name)
-            item_layout.addWidget(item_label)
-            checkbox = QCheckBox(self)
-            checkbox.setChecked(original_checkbox.isChecked())
-            item_layout.addWidget(checkbox)
+            item_layout.addWidget(item_label, alignment=Qt.AlignLeft)
 
-            # Add heart button for removal from favorites
-            heart_button = QPushButton("💔")
-            heart_button.setFlat(True)
-            heart_button.setStyleSheet("color: white;")
-            heart_button.clicked.connect(lambda: self.toggle_favorite(plugin_name, heart_button, checkbox))
-            item_layout.addWidget(heart_button)
+            checkbox = QCheckBox(self)
+            item_layout.addWidget(checkbox, alignment=Qt.AlignRight)
+
+            heart_label = QLabel("🧡")
+            heart_label.setFont(QFont("Arial", 12))  # Adjusted font size to 12px
+            heart_label.mousePressEvent = lambda event, p=plugin_name: self.toggle_favorite(p, heart_label)
+            item_layout.addWidget(heart_label, alignment=Qt.AlignRight)
 
             item_widget.setLayout(item_layout)
             self.favorites_list.setItemWidget(favorite_item, 0, item_widget)
 
-            self.plugin_items.append((plugin_name, checkbox))
+            self.plugin_items[plugin_name]['favorite_checkbox'] = checkbox
+            self.plugin_items[plugin_name]['favorite_heart_label'] = heart_label
 
     def remove_from_favorites(self, plugin_name):
         if plugin_name in self.favorites:
@@ -328,11 +427,19 @@ class MainWindow(QMainWindow):
             root = self.favorites_list.invisibleRootItem()
             for i in range(root.childCount()):
                 child = root.child(i)
-                if child.text(0) == plugin_name:
-                    root.removeChild(child)
-                    break
+                widget = self.favorites_list.itemWidget(child, 0)
+                if widget:
+                    label = widget.findChild(QLabel)
+                    if label and label.text() == plugin_name:
+                        root.removeChild(child)
+                        break
 
-            self.plugin_items = [(name, checkbox) for name, checkbox in self.plugin_items if name != plugin_name]
+            # Update the main list heart label
+            if 'heart_label' in self.plugin_items[plugin_name]:
+                self.plugin_items[plugin_name]['heart_label'].setText("🤍")
+
+            del self.plugin_items[plugin_name]['favorite_checkbox']
+            del self.plugin_items[plugin_name]['favorite_heart_label']
 
     def open_file_dialog(self):
         file_dialog = QFileDialog()
@@ -345,7 +452,7 @@ class MainWindow(QMainWindow):
             self.analyze_button.setVisible(True)
 
     def analyze_memory_dump(self):
-        selected_plugins = [plugin_name for plugin_name, checkbox in self.plugin_items if checkbox.isChecked()]
+        selected_plugins = [plugin_name for plugin_name, items in self.plugin_items.items() if items['checkbox'].isChecked()]
         if not selected_plugins:
             print("No plugins selected.")
             self.output_text_edit.append("No plugins selected.")
@@ -362,6 +469,15 @@ class MainWindow(QMainWindow):
     def display_result(self, result):
         self.output_text_edit.clear()
         self.output_text_edit.append(result)
+
+    def back_button_clicked(self):
+        # Get the directory of the current script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # Construct the path to the target Python file
+        target_file = os.path.join(current_dir, "StartSide(Christina).py")
+        # subprocess.Popen(['python', target_file])
+        # Bytt ut gjeldende prosess med StartSide.py
+        os.execl(sys.executable, sys.executable, target_file)
 
 
 if __name__ == "__main__":

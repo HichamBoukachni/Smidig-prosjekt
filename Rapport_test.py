@@ -5,8 +5,8 @@ from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QGroupBox, QPushButton, QVBoxLayout, QSizePolicy, \
     QFileDialog, QLabel
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
+#from reportlab.lib.pagesizes import letter
+#from reportlab.pdfgen import canvas
 
 class GuiExample(QWidget):
     def __init__(self):

@@ -8,6 +8,23 @@ from PyQt5.QtCore import Qt, QSize
 
 class MainWindow(QMainWindow):
 
+    # Knappene som blir koblet til andre filer
+    def profile_button_clicked(self):
+        # Get the directory of the current script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # Construct the path to the target Python file
+        target_file = os.path.join(current_dir, "mainlogin.py")
+        # Åpner i nytt vindu
+        subprocess.Popen(['python', target_file])
+
+    def settings_button_clicked(self):
+        # Get the directory of the current script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # Construct the path to the target Python file
+        target_file = os.path.join(current_dir, "Settings.py")
+        # Åpner i nytt vindu
+        subprocess.Popen(['python', target_file])
+
     def plugin_button_clicked(self):
         # Get the directory of the current script
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -17,15 +34,10 @@ class MainWindow(QMainWindow):
         # Bytt ut gjeldende prosess med target_file
         os.execl(sys.executable, sys.executable, target_file)
 
-    def profile_button_clicked(self):
-        # Get the directory of the current script
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        # Construct the path to the target Python file
-        target_file = os.path.join(current_dir, "mainlogin.py")
-        # Åpner i nytt vindu
-        subprocess.Popen(['python', target_file])
-        # Bytt ut gjeldende prosess med target_file
-        # os.execl(sys.executable, sys.executable, target_file)
+    def command_button_clicked(self):
+            # Open the command prompt
+            subprocess.run(["start", "cmd", "/k", "cd volatility3"], shell=True)
+
 
     def __init__(self):
         super().__init__()
@@ -79,13 +91,14 @@ class MainWindow(QMainWindow):
         profile_btn.setStyleSheet("background-color: transparent;")
         profile_btn.setFixedSize(40, 40)
         profile_btn.setIconSize(profile_btn.size())
-        profile_btn.clicked.connect(self.profile_button_clicked)
+        profile_btn.clicked.connect(self.profile_button_clicked) # Kobler knappen til mainlogin.py
 
         setting_btn = QPushButton()
         setting_btn.setIcon(QIcon("images/_settings.png"))
         setting_btn.setStyleSheet("background-color: transparent;")
         setting_btn.setFixedSize(40, 40)
         setting_btn.setIconSize(setting_btn.size())
+        setting_btn.clicked.connect(self.settings_button_clicked) # Kobler knappen til Settings.py
 
         # Adding profile and settings buttons to profilesettings_layout
         profilesetting_layout.addWidget(profile_btn)
@@ -171,6 +184,8 @@ class MainWindow(QMainWindow):
 
             if tooltip == "Plugin":
                 button.clicked.connect(self.plugin_button_clicked)
+            elif tooltip == "Command":
+                button.clicked.connect(self.command_button_clicked)
 
             icon_layout.addWidget(button)
 

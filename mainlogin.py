@@ -1,5 +1,5 @@
 import sys
-# import mysql.connector  # Import MySQL connector to connect to the database
+import mysql.connector  # Import MySQL connector to connect to the database
 from PyQt5.QtWidgets import (  # Import necessary PyQt5 widgets for the GUI
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpacerItem, QSizePolicy, QFrame, QMessageBox
 )

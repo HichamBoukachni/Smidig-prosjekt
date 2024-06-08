@@ -120,6 +120,18 @@ class MainWindow(QMainWindow):
         # Track which plugins are in favorites
         self.favorites = set()
 
+        # Placeholder Image/Icon Button
+        self.upload_button = QPushButton(self)
+        self.upload_button.setIconSize(QSize(185, 185))  # Making the icon three times larger
+        self.upload_button.setFlat(True)
+        self.upload_button.clicked.connect(self.open_file_dialog)
+        self.upload_button.setObjectName("upload_button")
+
+        self.upload_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.upload_button.setMinimumHeight(182)
+        self.sidebar_layout.addWidget(self.upload_button, alignment=Qt.AlignBottom)
+        self.setLayout(self.sidebar_layout)
+
         # Main content area
         self.content_layout = QVBoxLayout()
         self.main_layout.addLayout(self.content_layout, 4)
@@ -158,29 +170,12 @@ class MainWindow(QMainWindow):
         # Adding progress_bar_layout to content_layout
         self.content_layout.addLayout(self.progress_bar_layout)
 
-        # Placeholder Image/Icon Button
-        self.upload_button = QPushButton(self)
-        self.upload_button.setIconSize(QSize(192, 192))  # Making the icon three times larger
-        self.upload_button.setFlat(True)
-        self.upload_button.setFixedSize(150, 192)
-        self.upload_button.clicked.connect(self.open_file_dialog)
-        self.upload_button.setObjectName("upload_button")
-        self.content_layout.addWidget(self.upload_button, alignment=Qt.AlignCenter)
-
         # Analyze Button
         self.analyze_button = QPushButton(self.translations['analyze_button'][self.translations['current_language']], self)
         self.analyze_button.setVisible(False)
         self.analyze_button.clicked.connect(self.analyze_memory_dump)
         self.analyze_button.setObjectName("analyze_button")
         self.content_layout.addWidget(self.analyze_button)
-
-        # Placeholder Frame
-        self.placeholder_frame = QFrame(self)
-        self.placeholder_frame.setFrameShape(QFrame.Box)
-        self.placeholder_frame.setLineWidth(2)
-        self.placeholder_frame.setObjectName("placeholder_frame")
-        self.placeholder_layout = QVBoxLayout(self.placeholder_frame)
-        self.placeholder_layout.addWidget(self.upload_button, alignment=Qt.AlignCenter)
 
         # Result Area
         self.result_area = QWidget()
@@ -193,12 +188,6 @@ class MainWindow(QMainWindow):
         self.output_text_edit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.result_layout.addWidget(self.output_text_edit)  # Endret fra content_layout til result_layout
 
-        # Vertical Splitter
-        self.vertical_splitter = QSplitter(Qt.Vertical)
-        self.vertical_splitter.addWidget(self.placeholder_frame)
-        self.vertical_splitter.addWidget(self.output_text_edit)
-
-        self.content_layout.addWidget(self.vertical_splitter)
 
         # Styling
         self.setStyleSheet("""
@@ -212,6 +201,7 @@ class MainWindow(QMainWindow):
                 color: rgb(42, 53, 65);
                 background-color: rgb(255, 255, 255);
                 border-radius: 7px;
+                margin-top: 5px;
             }
             QComboBox::drop-down {
                 border-radius: 10px; 
@@ -229,36 +219,42 @@ class MainWindow(QMainWindow):
             }
             QPushButton#upload_button {
                 background-color: rgb(42, 53, 65);
+                margin-bottom: 10px;
+                padding: 20px;
                 border-radius: 10px;
-                image: url("images/_uploadgray.png");
+                image: url("images/_uploadorange.png");
             }
             QPushButton#view_result_button {
                 background-color: rgb(42, 53, 65);
                 border-style: solid;
-                border-color: ;
+                border-color: rgb(217, 111, 51);
                 border-radius: 10px;
             }
             QPushButton:hover#upload_button {
-                image: url(images/_uploadgrayhover.png);
+                image: url(images/_uploadorangehover.png);
             }
             QPushButton:hover#view_result_button {
                 background-color: rgb(64, 81, 99);
             }
             QPushButton#analyze_button {
-                margin-top: 18px;
-                margin-bottom: -4px;
+                margin-top: 1px;
+                margin-left: 10px;
+                margin-right: 10px;
                 background-color: rgb(42, 53, 65);
+                font-size: 17px;
                 color: white;
             }
             QProgressBar {
-                background-color: #444;
+                background-color: rgb(217, 111, 51);
                 color: white;
                 text-align: center;
+                margin-left: 10px;
             }
             QTreeWidget {
                 background-color: rgb(42, 53, 65);
                 color: white; 
                 border-radius: 10px;
+                margin-top: 10px;
             }
             QTreeWidget::item {
                 padding: 5px;
@@ -266,19 +262,6 @@ class MainWindow(QMainWindow):
             QTreeWidget::item:selected {
                 background-color: rgb(42, 53, 65);
                 color: white;
-            }
-            QSplitter::handle {
-                background-color: rgb(28, 37, 48);
-            }
-
-            QFrame#placeholder_frame { 
-                background-color: rgb(42, 53, 65);
-                color: white;
-                border: solid;
-                border-color: rgb(217, 111, 51); 
-                border-width: 2px;
-                border-radius: 10px;
-                padding: 10px;
             }
             QTextEdit {
                 background-color: rgb(42, 53, 65);
@@ -486,7 +469,7 @@ class MainWindow(QMainWindow):
     def open_file_dialog(self):
         file_dialog = QFileDialog()
         file_dialog.setFileMode(QFileDialog.AnyFile)
-        file_dialog.setNameFilter("Memory Dumps (*.mem)")
+        file_dialog.setNameFilter("Memory Dumps (*.mem *.raw *.dd *.bin *.dmp *.mdmp *.hiberfil.sys *.pagefile.sys *.vmem *.vmsn *.vmtm *.sav *.)")
         file_dialog.setViewMode(QFileDialog.Detail)
         if file_dialog.exec_():
             self.file_path = file_dialog.selectedFiles()[0]
@@ -612,3 +595,4 @@ if __name__ == "__main__":
     window = MainWindow()
     window.show()
     sys.exit(app.exec_())
+

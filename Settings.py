@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QApplication, QDialog, QLabel, QPushButton, QComboBo
     QDialogButtonBox, QLineEdit, QSpinBox, QVBoxLayout, QFrame
 from PyQt5.QtCore import Qt
 
+
 class SettingsDialog(QDialog):
     def __init__(self):
         super().__init__()

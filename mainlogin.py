@@ -9,6 +9,7 @@ from PyQt5.QtGui import QFont, QColor, QIcon  # Import PyQt5 modules for fonts a
 from PyQt5.QtCore import Qt  # Import Qt core module for alignment constants
 import bcrypt  # Import bcrypt for password hashing
 
+
 # Define the LoginWindow class, inheriting from QWidget
 class LoginWindow(QWidget):
     def __init__(self):

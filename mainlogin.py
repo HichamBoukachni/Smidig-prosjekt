@@ -1,5 +1,7 @@
+import os
+import subprocess
 import sys
-import mysql.connector  # Import MySQL connector to connect to the database
+#import mysql.connector  # Import MySQL connector to connect to the database
 from PyQt5.QtWidgets import (  # Import necessary PyQt5 widgets for the GUI
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QSpacerItem, QSizePolicy, QFrame, QMessageBox
 )
@@ -13,8 +15,33 @@ class LoginWindow(QWidget):
         super().__init__()  # Initialize the base class
         self.initUI()  # Call the method to initialize the UI
 
+    def resizeEvent(self, event):
+        # Update the border_frame size to match the window size
+        self.border_frame.setGeometry(self.rect())
+        super().resizeEvent(event)
+
+    def createacc_button_clicked(self):
+        # Get the directory of the current script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # Construct the path to the target Python file
+        target_file = os.path.join(current_dir, "createacc.py")
+        # Åpner i nytt vindu
+        os.execl(sys.executable, sys.executable, target_file)
+
     def initUI(self):
         main_layout = QVBoxLayout()  # Create the main vertical layout
+
+        # Create a QFrame to add the border
+        self.border_frame = QFrame(self)
+        self.border_frame.setStyleSheet("border: 2px solid rgb(42, 53, 65);")
+        self.border_frame.setLineWidth(2)
+
+        # Make QFrame the same size as the main window
+        self.border_frame.setGeometry(self.rect())
+
+        # Create a layout inside the border frame
+        layout = QVBoxLayout(self.border_frame)
+        self.border_frame.setLayout(layout)
 
         # Grey square at the top-right corner
         top_right_square = QPushButton()
@@ -148,6 +175,7 @@ class LoginWindow(QWidget):
                 background-color: #cc7634;
             }
         """)  # Set styles for the button
+        sign_up_button.clicked.connect(self.createacc_button_clicked)  # Kobler knappen til createacc.py
 
         # Center sign up button
         sign_up_layout = QHBoxLayout()

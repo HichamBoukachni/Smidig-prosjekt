@@ -1,5 +1,6 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QDialog, QLabel, QPushButton, QComboBox, QGridLayout, QFormLayout, QDialogButtonBox, QLineEdit, QSpinBox, QVBoxLayout
+from PyQt5.QtWidgets import QApplication, QDialog, QLabel, QPushButton, QComboBox, QGridLayout, QFormLayout, \
+    QDialogButtonBox, QLineEdit, QSpinBox, QVBoxLayout, QFrame
 from PyQt5.QtCore import Qt
 
 class SettingsDialog(QDialog):
@@ -11,11 +12,29 @@ class SettingsDialog(QDialog):
         self.default_stylesheet = self.get_stylesheet()
         self.setStyleSheet(self.default_stylesheet)
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint & ~Qt.WindowMaximizeButtonHint)
+        self.setWindowFlags(Qt.FramelessWindowHint)  # Tar vekk den hvite greia på toppen
 
         self.initUI()
 
+    def resizeEvent(self, event):
+        # Update the border_frame size to match the window size
+        self.border_frame.setGeometry(self.rect())
+        super().resizeEvent(event)
+
     def initUI(self):
         self.layout = QGridLayout()
+
+        # Create a QFrame to add the border
+        self.border_frame = QFrame(self)
+        self.border_frame.setStyleSheet("border: 2px solid rgb(42, 53, 65);")
+        self.border_frame.setLineWidth(2)
+
+        # Make QFrame the same size as the main window
+        self.border_frame.setGeometry(self.rect())
+
+        # Create a layout inside the border frame
+        layout = QVBoxLayout(self.border_frame)
+        self.border_frame.setLayout(layout)
 
         # Header
         self.header_label = QLabel("Settings")
@@ -105,36 +124,46 @@ class SettingsDialog(QDialog):
     def get_stylesheet(self):
         return """
             QDialog {
-                background-color: #FFFFFF; 
-                color: #000000;
+                background-color: rgb(255, 255, 255); 
+                color: rgb(0, 0, 0);
             }
             QLabel {
-                color: #000000;
+                color: rgb(0, 0, 0);
                 font-size: 14px;
             }
             QComboBox {
-                background-color: #FFFFFF; 
-                color: #000000; 
-                border: 1px solid #FF4500; 
+                background-color: rgb(255, 255, 255); 
+                color: rgb(0, 0, 0); 
+                border: 1px solid rgb(217, 111, 51); 
+                border-radius: 5px;
                 padding: 5px;
                 margin: 5px;
             }
             QComboBox QAbstractItemView {
-                background-color: #FFFFFF;
-                color: #000000;
+                background-color: rgb(255, 255, 255);
+                color: rgb(0, 0, 0);
                 selection-background-color: #FF4500;
             }
+            QComboBox::drop-down {
+                border-radius: 10px; 
+                width: 40%;
+            }
+            QComboBox::down-arrow {
+                image: url(images/_arrowdownO.png);
+                max-width: 150%; 
+                max-height: 150%;
+            }
             QPushButton {
-                background-color: #FFFFFF; 
-                color: #000000; 
-                border: 1px solid #FF4500; 
+                background-color: rgb(255, 255, 255); 
+                color: rgb(0, 0, 0); 
+                border: 1px solid rgb(217, 111, 51); 
                 padding: 10px;
                 margin: 5px;
                 border-radius: 5px;
             }
             QPushButton:checked {
                 background-color: #FF4500; 
-                color: #FFFFFF;
+                color: rgb(255, 255, 255);
             }
             QPushButton:hover {
                 background-color: #FF6347;
@@ -147,29 +176,39 @@ class SettingsDialog(QDialog):
     def get_darkmode_stylesheet(self):
         return """
             QDialog {
-                background-color: #1E1E1E; 
-                color: #C0C0C0;
+                background-color: rgb(28, 37, 48); 
+                color: rgb(177, 188, 200);
             }
             QLabel {
-                color: #C0C0C0;
+                color: rgb(177, 188, 200);
                 font-size: 14px;
             }
             QComboBox {
-                background-color: #1E1E1E; 
-                color: #C0C0C0; 
-                border: 1px solid #FF4500; 
+                background-color: rgb(42, 53, 65); 
+                color: rgb(177, 188, 200); 
+                border: 1px solid rgb(217, 111, 51);
+                border-radius:5px; 
                 padding: 5px;
                 margin: 5px;
             }
             QComboBox QAbstractItemView {
-                background-color: #333333;
-                color: #C0C0C0;
-                selection-background-color: #FF4500;
+                background-color: rgb(42, 53, 65);
+                color: rgb(177, 188, 200);
+                selection-background-color: rgb(217, 111, 51);
+            }
+            QComboBox::drop-down {
+                border-radius: 10px; 
+                width: 40%;
+            }
+            QComboBox::down-arrow {
+                image: url(images/_arrowdownO.png);
+                max-width: 150%; 
+                max-height: 150%;
             }
             QPushButton {
-                background-color: #333333; 
-                color: #C0C0C0; 
-                border: 1px solid #FF4500; 
+                background-color: rgb(42, 53, 65); 
+                color: rgb(177, 188, 200); 
+                border: 1px solid rgb(217, 111, 51); 
                 padding: 10px;
                 margin: 5px;
                 border-radius: 5px;

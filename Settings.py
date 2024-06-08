@@ -1,8 +1,6 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QDialog, QLabel, QPushButton, QComboBox, QGridLayout, QFormLayout, \
-    QDialogButtonBox, QLineEdit, QSpinBox, QVBoxLayout, QFrame
+from PyQt5.QtWidgets import QApplication, QDialog, QLabel, QPushButton, QComboBox, QGridLayout, QFormLayout, QDialogButtonBox, QLineEdit, QSpinBox, QVBoxLayout
 from PyQt5.QtCore import Qt
-
 
 class SettingsDialog(QDialog):
     def __init__(self):
@@ -17,25 +15,8 @@ class SettingsDialog(QDialog):
 
         self.initUI()
 
-    def resizeEvent(self, event):
-        # Update the border_frame size to match the window size
-        self.border_frame.setGeometry(self.rect())
-        super().resizeEvent(event)
-
     def initUI(self):
         self.layout = QGridLayout()
-
-        # Create a QFrame to add the border
-        self.border_frame = QFrame(self)
-        self.border_frame.setStyleSheet("border: 2px solid rgb(42, 53, 65);")
-        self.border_frame.setLineWidth(2)
-
-        # Make QFrame the same size as the main window
-        self.border_frame.setGeometry(self.rect())
-
-        # Create a layout inside the border frame
-        layout = QVBoxLayout(self.border_frame)
-        self.border_frame.setLayout(layout)
 
         # Header
         self.header_label = QLabel("Settings")

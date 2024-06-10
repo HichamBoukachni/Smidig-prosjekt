@@ -5,7 +5,7 @@ import sys  # system related operations
 # Importing library from PyQt5 used for GUI-elements
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, \
     QPushButton, QSizePolicy, QSpacerItem
-from PyQt5.QtGui import QIcon, QPixmap, QFont
+from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt, QSize
 
 # Class to define the main window for the application

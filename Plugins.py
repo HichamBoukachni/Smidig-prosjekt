@@ -1,5 +1,6 @@
 import sys
 import os
+import subprocess
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QPushButton,
                              QProgressBar, QComboBox, QWidget, QLabel, QTreeWidget, QTreeWidgetItem, QLineEdit,
                              QFileDialog, QCheckBox, QTextEdit, QSizePolicy, QSplitter, QFrame)
@@ -29,7 +30,6 @@ class Worker(QThread):
 
         process.waitForFinished()
         self.result_ready.emit(output)
-
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -154,6 +154,8 @@ class MainWindow(QMainWindow):
             self.translations['view_result_button'][self.translations['current_language']], self)
         self.view_result_button.setObjectName("view_result_button")
         self.progress_bar_layout.addWidget(self.view_result_button)
+        # Connect the button click to the function
+        self.view_result_button.clicked.connect(self.open_report_page)
 
         # Add the button with icon
         self.back_button = QPushButton(self)
@@ -501,12 +503,23 @@ class MainWindow(QMainWindow):
 
     def back_button_clicked(self):
         # Get the directory of the current script
-        current_dir = os.path.dirname(os.path.abspath(__file__))
+        current_dir = os.path.dirname(os.path.abspath(_file_))
         # Construct the path to the target Python file
         target_file = os.path.join(current_dir, "StartSide(Christina).py")
-        # subprocess.Popen(['python', target_file])
-        # Bytt ut gjeldende prosess med StartSide.py
-        os.execl(sys.executable, sys.executable, target_file)
+        # Launch the target file as a new process
+        subprocess.Popen(['python', target_file])
+        # Close the current application
+        self.close()
+
+    def open_report_page(self):
+        # Get the directory of the current script
+        current_dir = os.path.dirname(os.path.abspath(_file_))
+        # Construct the path to the target Python file
+        target_file = os.path.join(current_dir, "Rapport_test.py")
+        # Launch the target file as a new process
+        subprocess.Popen(['python', target_file])
+        # Optionally close the current application if needed
+        # self.close()
 
     def change_language(self):
         self.translations['current_language'] = self.language_combobox.currentText()
@@ -588,7 +601,6 @@ class MainWindow(QMainWindow):
 
         for sub_item in ["windows.volshell.Volshell", "yarascan.YaraScan"]:
             self.add_plugin_item(additional_features_item, sub_item)
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -1,10 +1,12 @@
 import sys
 import os
+import subprocess
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QPushButton,
                              QProgressBar, QComboBox, QWidget, QLabel, QTreeWidget, QTreeWidgetItem, QLineEdit,
-                             QFileDialog, QCheckBox, QTextEdit, QSizePolicy, QSplitter, QFrame)
+                             QFileDialog, QCheckBox, QTextEdit, QSizePolicy)
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 from PyQt5.QtCore import Qt, QSize, QThread, pyqtSignal, QProcess
+
 
 class Worker(QThread):
     result_ready = pyqtSignal(str)
@@ -154,6 +156,8 @@ class MainWindow(QMainWindow):
             self.translations['view_result_button'][self.translations['current_language']], self)
         self.view_result_button.setObjectName("view_result_button")
         self.progress_bar_layout.addWidget(self.view_result_button)
+        # Connect the button click to the function
+        self.view_result_button.clicked.connect(self.open_report_page)
 
         # Add the button with icon
         self.back_button = QPushButton(self)
@@ -187,7 +191,6 @@ class MainWindow(QMainWindow):
         self.output_text_edit.setReadOnly(True)
         self.output_text_edit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.result_layout.addWidget(self.output_text_edit)  # Endret fra content_layout til result_layout
-
 
         # Styling
         self.setStyleSheet("""
@@ -504,9 +507,20 @@ class MainWindow(QMainWindow):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         # Construct the path to the target Python file
         target_file = os.path.join(current_dir, "StartSide(Christina).py")
-        # subprocess.Popen(['python', target_file])
-        # Bytt ut gjeldende prosess med StartSide.py
-        os.execl(sys.executable, sys.executable, target_file)
+        # Launch the target file as a new process
+        subprocess.Popen(['python', target_file])
+        # Close the current application
+        self.close()
+
+    def open_report_page(self):
+        # Get the directory of the current script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # Construct the path to the target Python file
+        target_file = os.path.join(current_dir, "Rapport_test.py")
+        # Launch the target file as a new process
+        subprocess.Popen(['python', target_file])
+        # Optionally close the current application if needed
+        # self.close()
 
     def change_language(self):
         self.translations['current_language'] = self.language_combobox.currentText()
@@ -595,4 +609,3 @@ if __name__ == "__main__":
     window = MainWindow()
     window.show()
     sys.exit(app.exec_())
-

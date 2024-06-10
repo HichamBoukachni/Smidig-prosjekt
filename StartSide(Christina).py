@@ -37,8 +37,8 @@ class MainWindow(QMainWindow):
         os.execl(sys.executable, sys.executable, target_file)
 
     def command_button_clicked(self):
-            # Open the command prompt
-            subprocess.run(["start", "cmd", "/k", "cd volatility3"], shell=True)
+        # Open the command prompt
+        subprocess.run(["start", "cmd", "/k", "cd volatility3"], shell=True)
 
 
     def __init__(self):

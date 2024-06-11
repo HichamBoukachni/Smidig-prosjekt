@@ -204,7 +204,7 @@ class SettingsDialog(QDialog):
         self.quit_button.setText(self.language_dict[language]["quit"])
         self.language_label.setText(self.language_dict[language]["language"])
 
-    # Function to change the language based on user selection
+    # Function to change the language based on users preference
     def change_language(self):
         selected_language = self.language_combo.currentText()
         self.update_language(selected_language)

@@ -2,77 +2,80 @@ import sys
 from PyQt5.QtWidgets import QApplication, QDialog, QLabel, QPushButton, QComboBox, QGridLayout, QFormLayout, QDialogButtonBox, QLineEdit, QSpinBox, QVBoxLayout
 from PyQt5.QtCore import Qt
 
+# SettingsDialog class that manages how the settings window looks
+
 class SettingsDialog(QDialog):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Settings")
-        self.setGeometry(100, 100, 460, 500)
-        self.default_stylesheet = self.get_stylesheet()
-        self.setStyleSheet(self.default_stylesheet)
-        self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint & ~Qt.WindowMaximizeButtonHint)
+        self.setWindowTitle("Settings")  # Decide the window title to be named "Settings"
+        self.setGeometry(100, 100, 460, 500)  # Define how the geometry of the window looks
+        self.default_stylesheet = self.get_stylesheet()  # Get the default stylesheet
+        self.setStyleSheet(self.default_stylesheet)  # Apply the default stylesheet
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint & ~Qt.WindowMaximizeButtonHint)  # Disable close and maximize buttons
 
-        self.initUI()
+        self.initUI()  # Initialize the UI components
 
     def initUI(self):
-        self.layout = QGridLayout()
+        self.layout = QGridLayout()  # Use a grid layout for the settings window
 
-        # Header
+        # Header label for the settings window
         self.header_label = QLabel("Settings")
-        self.header_label.setAlignment(Qt.AlignCenter)
+        self.header_label.setAlignment(Qt.AlignCenter)  # Center align the header
         self.header_label.setStyleSheet("font-size: 18px; font-weight: bold; margin-top: 10px; margin-bottom: 20px;")
         self.layout.addWidget(self.header_label, 0, 0, 1, 4)
 
-        # Automatically save to cloud
+        # Button to for automatic saving to the cloud
         self.autosave_button = QPushButton("Automatically save to cloud", self)
-        self.autosave_button.clicked.connect(self.show_autosave_settings)
+        self.autosave_button.clicked.connect(self.show_autosave_settings)  # Connect the button to its function
         self.layout.addWidget(self.autosave_button, 1, 0, 1, 2)
 
-        # Language Selection
+        # section where we define our language selection
         self.language_label = QLabel("Language", self)
         self.language_combo = QComboBox(self)
         self.language_combo.addItem("English - US")
         self.language_combo.addItem("Norwegian - NO")
-        self.language_combo.currentIndexChanged.connect(self.change_language)
+        self.language_combo.currentIndexChanged.connect(self.change_language)  # Change language on selection
         self.layout.addWidget(self.language_label, 1, 2, 1, 1)
         self.layout.addWidget(self.language_combo, 1, 3, 1, 1)
 
-        # User Settings
+        # Button for user settings
         self.user_button = QPushButton("User Settings", self)
         self.user_button.clicked.connect(self.show_user_settings)
         self.layout.addWidget(self.user_button, 2, 2, 1, 2)
 
-        # Notification Settings
+        # Button for notification settings
         self.notification_button = QPushButton("Notification Settings", self)
         self.notification_button.clicked.connect(self.show_notification_settings)
         self.layout.addWidget(self.notification_button, 2, 0, 1, 2)
 
-        # Network Settings
+        # Button for network settings
         self.network_button = QPushButton("Network Settings", self)
         self.network_button.clicked.connect(self.show_network_settings)
         self.layout.addWidget(self.network_button, 3, 0, 1, 2)
 
-        # Security Settings
+        # Button for security settings
         self.security_button = QPushButton("Security Settings", self)
         self.security_button.clicked.connect(self.show_security_settings)
         self.layout.addWidget(self.security_button, 3, 2, 1, 2)
 
-        # Accessibility and Darkmode Settings
+        # Buttons for accessibility and dark mode settings
         self.accessibility_button = QPushButton("Accessibility Settings", self)
         self.accessibility_button.clicked.connect(self.show_accessibility_settings)
         self.darkmode_button = QPushButton("Darkmode", self)
-        self.darkmode_button.setCheckable(True)
-        self.darkmode_button.clicked.connect(self.toggle_darkmode)
+        self.darkmode_button.setCheckable(True)  # Make the dark mode button checkable
+        self.darkmode_button.clicked.connect(self.toggle_darkmode)  # Toggle dark mode on click
         self.layout.addWidget(self.accessibility_button, 4, 0, 1, 2)
         self.layout.addWidget(self.darkmode_button, 4, 2, 1, 2)
 
-        # Quit button
+        # Quit button to close the dialog
         self.quit_button = QPushButton("Quit", self)
-        self.quit_button.clicked.connect(self.accept)
+        self.quit_button.clicked.connect(self.accept)  # Close the dialog on click
         self.layout.addWidget(self.quit_button, 5, 0, 1, 4)
 
-        self.setLayout(self.layout)
+        self.setLayout(self.layout)  # Set the layout for the dialog
 
+        # Dictionary for language translations for the Language button
         self.language_dict = {
             "English - US": {
                 "header": "Settings",
@@ -100,8 +103,9 @@ class SettingsDialog(QDialog):
             }
         }
 
-        self.update_language("English - US")
+        self.update_language("English - US")  # Initialize with English language
 
+    # Function to get the default stylesheet
     def get_stylesheet(self):
         return """
             QDialog {
@@ -144,6 +148,7 @@ class SettingsDialog(QDialog):
             }
         """
 
+    # Function to get the dark mode stylesheet
     def get_darkmode_stylesheet(self):
         return """
             QDialog {
@@ -186,6 +191,7 @@ class SettingsDialog(QDialog):
             }
         """
 
+    # Function to update the language of the UI elements
     def update_language(self, language):
         self.header_label.setText(self.language_dict[language]["header"])
         self.autosave_button.setText(self.language_dict[language]["autosave"])
@@ -198,79 +204,17 @@ class SettingsDialog(QDialog):
         self.quit_button.setText(self.language_dict[language]["quit"])
         self.language_label.setText(self.language_dict[language]["language"])
 
+    # Function to change the language based on user selection
     def change_language(self):
         selected_language = self.language_combo.currentText()
         self.update_language(selected_language)
 
+    # Function to display autosave settings
     def show_autosave_settings(self):
         self.show_popup("Autosave Settings", "Configure your autosave settings here.")
 
+    # Function to display user settings
     def show_user_settings(self):
         dialog = QDialog(self)
         dialog.setWindowTitle(self.user_button.text())
-        dialog.setGeometry(150, 150, 300, 300)
-        dialog.setStyleSheet(self.get_stylesheet())
 
-        layout = QFormLayout()
-        layout.addRow(QLabel(self.user_button.text()))
-
-        name_input = QLineEdit(dialog)
-        name_input.setPlaceholderText("Name")
-        layout.addRow("Name:", name_input)
-
-        email_input = QLineEdit(dialog)
-        email_input.setPlaceholderText("Email")
-        layout.addRow("Email:", email_input)
-
-        password_input = QLineEdit(dialog)
-        password_input.setEchoMode(QLineEdit.Password)
-        password_input.setPlaceholderText("Password")
-        layout.addRow("Password:", password_input)
-
-        confirm_password_input = QLineEdit(dialog)
-        confirm_password_input.setEchoMode(QLineEdit.Password)
-        confirm_password_input.setPlaceholderText("Confirm Password")
-        layout.addRow("Confirm Password:", confirm_password_input)
-
-        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, dialog)
-        buttons.accepted.connect(dialog.accept)
-        buttons.rejected.connect(dialog.reject)
-        layout.addRow(buttons)
-
-        dialog.setLayout(layout)
-        dialog.exec_()
-
-    def show_notification_settings(self):
-        self.show_popup("Notification Settings", "Configure your notification settings here.")
-
-    def show_network_settings(self):
-        self.show_popup("Network Settings", "Configure your network settings here.")
-
-    def show_security_settings(self):
-        self.show_popup("Security Settings", "Configure your security settings here.")
-
-    def show_accessibility_settings(self):
-        self.show_popup("Accessibility Settings", "Configure your accessibility settings here.")
-
-    def show_popup(self, title, text):
-        dialog = QDialog(self)
-        dialog.setWindowTitle(title)
-        dialog.setGeometry(150, 150, 300, 200)
-        dialog.setStyleSheet(self.get_stylesheet())
-        layout = QVBoxLayout()
-        layout.addWidget(QLabel(text))
-        dialog.setLayout(layout)
-        dialog.exec_()
-
-    def toggle_darkmode(self):
-        if self.darkmode_button.isChecked():
-            self.setStyleSheet(self.get_darkmode_stylesheet())
-        else:
-            self.setStyleSheet(self.default_stylesheet)
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    dialog = SettingsDialog()
-    dialog.show()
-    sys.exit(app.exec_())

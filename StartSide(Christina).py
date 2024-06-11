@@ -40,6 +40,14 @@ class MainWindow(QMainWindow):
         # Open the command prompt
         subprocess.run(["start", "cmd", "/k", "cd volatility3"], shell=True)
 
+    def result_button_clicked(self):
+        # Get the directory of the current script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # Construct the path to the target Python file
+        target_file = os.path.join(current_dir, "Rapport_test.py")
+        # Replacing the current running script with the target file
+        os.execl(sys.executable, sys.executable, target_file)
+
 
     def __init__(self):
         super().__init__()  # Calling the constructor of QMainWindow
@@ -197,6 +205,8 @@ class MainWindow(QMainWindow):
                 button.clicked.connect(self.plugin_button_clicked)
             elif tooltip == "Command":
                 button.clicked.connect(self.command_button_clicked)
+            elif tooltip == "Result":
+                button.clicked.connect(self.result_button_clicked)
 
             icon_layout.addWidget(button)  # Adding button to icon_layout
 

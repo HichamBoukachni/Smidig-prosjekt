@@ -17,43 +17,55 @@ class SettingsWindow(QWidget):
 
         # Move the title higher
         title_label = QLabel('Settings')
-        title_label.setStyleSheet("color: white;")
         title_label.setFont(QFont('Arial', 30))
         title_label.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(title_label)
         main_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         # Define style for widgets
-        label_style = "color: white; font-size: 18px;"
+        label_style = "color: rgb(177, 188, 200); font-size: 18px;"
         combo_style = """
             QComboBox {
-                color: white;
-                background-color: #2b2b2b;
+                color: rgb(177, 188, 200);
+                background-color: rgb(42, 53, 65);
                 font-size: 18px;
                 padding: 5px;
+                border: 1px solid rgb(217, 111, 51);
+                border-radius:5px; 
             }
             QComboBox QAbstractItemView {
-                color: white;
-                background-color: #2b2b2b;
-                selection-background-color: #3d3d3d;
+                color: rgb(177, 188, 200);
+                background-color: rgb(42, 53, 65);
+                selection-background-color: #FF6347;
+            }
+            QComboBox::drop-down {
+                border-radius: 10px; 
+                width: 40%;
+            }
+            QComboBox::down-arrow {
+                image: url(images/_arrowdownO.png);
+                max-width: 150%; 
+                max-height: 150%;
             }
         """
         toggle_style = """
             QCheckBox {
-                color: white;
+                color: rgb(177, 188, 200);
                 font-size: 18px;
             }
         """
         button_style = """
             QPushButton {
-                color: white;
-                background-color: #2b2b2b;
-                border: 2px solid orange;
+                color: rgb(177, 188, 200);
+                background-color: rgb(42, 53, 65);
+                border: 2px solid rgb(217, 111, 51);
                 padding: 10px;
                 font-size: 18px;
+                border: 1px solid rgb(217, 111, 51);
+                border-radius:5px; 
             }
             QPushButton:hover {
-                background-color: #444;
+                background-color: #FF6347;
             }
         """
 
@@ -105,7 +117,8 @@ class SettingsWindow(QWidget):
         self.setLayout(main_layout)
         self.setWindowTitle('Settings')
         self.setGeometry(100, 100, 800, 600)
-        self.setStyleSheet("background-color: #2b2b2b;")
+        self.setStyleSheet("background-color: rgb(28, 37, 48); color: rgb(177, 188, 200);")
+        self.setWindowFlags(Qt.FramelessWindowHint)  # Tar vekk den hvite greia på toppen
 
     def quit_action(self):
         self.close()

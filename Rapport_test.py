@@ -5,6 +5,9 @@ from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QGroupBox, QPushButton, QVBoxLayout, QSizePolicy, \
     QFileDialog, QLabel
+from reportlab.lib.pagesizes import letter
+
+
 #from reportlab.lib.pagesizes import letter
 #from reportlab.pdfgen import canvas
 
@@ -110,13 +113,13 @@ class GuiExample(QWidget):
 
             rgtBox.addWidget(button)
 
-            # Apply styles to make the button transparent and remove borders
+            #Apply styles to make the button transparent and remove borders
             button.setStyleSheet("QPushButton "
                                  "{ border: none; background: transparent; }")
 
             rgtBox.addWidget(button)
 
-        # Set the width of the right box at static 100px, so it doesn't move
+        #Set the width of the right box at static 100px, so it doesn't move
         groupBox.setFixedWidth(70)
         groupBox.setLayout(rgtBox)
         return groupBox
@@ -127,7 +130,7 @@ class GuiExample(QWidget):
         if button_number == 1:
             self.run_settings() #Opens settings
         if button_number == 2:
-            self.calc_n_save() #lage en enkel cal til pdf fil
+            self.calc_n_save() #On click creates a pdf
         if button_number == 3:
             print("3")
         if button_number == 4:
@@ -163,9 +166,11 @@ class GuiExample(QWidget):
             print(f"Saving PDF to {file_path}")
             self.create_pdf(file_path, result)
 
+    #Simple calculation to demostrate that the create pdf works
     def simple_calc(self):
         return 42
 
+    #Her is where the pdf gets created
     def create_pdf(self, file_path, result):
         try:
             c = canvas.Canvas(file_path, pagesize=letter)
@@ -177,14 +182,14 @@ class GuiExample(QWidget):
 
     #This lets you open the settings window
     def run_settings(self):
-        subprocess.run(["python", "settings_window.py"])
+        subprocess.run(["python", "Settings.py"])
 
     #This lets you open the window, while it is supposed to close this file but right now it just crashes dont know why
     def run_start_side(self):
         subprocess.run(["python", "StartSide(Christina).py"])
         QApplication.quit()
 
-#kjører programmet.
+#Starting the program
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = GuiExample()

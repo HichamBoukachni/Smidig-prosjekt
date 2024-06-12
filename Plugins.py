@@ -95,6 +95,12 @@ class MainWindow(QMainWindow):
         self.search_bar = QLineEdit(self)
         self.search_bar.setPlaceholderText(self.translations['search'][self.translations['current_language']])
         self.search_bar.setObjectName("search_bar")
+
+        # Set the font size for the search bar
+        font = QFont()
+        font.setPointSize(9)  # Adjust the font size as needed
+        self.search_bar.setFont(font)
+
         self.search_bar.textChanged.connect(self.filter_plugins)
         self.search_layout.addWidget(self.search_bar)
         self.sidebar_layout.addLayout(self.search_layout)
@@ -103,6 +109,16 @@ class MainWindow(QMainWindow):
         self.favorites_combobox = QComboBox(self)
         self.favorites_combobox.addItem(self.translations['all_plugins'][self.translations['current_language']])
         self.favorites_combobox.addItem(self.translations['favorites'][self.translations['current_language']])
+
+        # Set the font size for the combobox
+        font = QFont()
+        font.setPointSize(9)  # Adjust the font size as needed
+        self.favorites_combobox.setFont(font)
+
+        # Set the size policy and minimum height
+        self.favorites_combobox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.favorites_combobox.setMinimumHeight(30)  # Adjust the height as needed
+
         self.favorites_combobox.currentIndexChanged.connect(self.change_plugin_list)
         self.sidebar_layout.addWidget(self.favorites_combobox)
 
@@ -142,6 +158,16 @@ class MainWindow(QMainWindow):
         self.language_combobox = QComboBox(self)
         self.language_combobox.addItem("English")
         self.language_combobox.addItem("Norwegian")
+
+        # Set the font size for the combobox
+        font = QFont()
+        font.setPointSize(9)  # Adjust the font size as needed
+        self.language_combobox.setFont(font)
+
+        # Set the size policy and minimum height
+        self.language_combobox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.language_combobox.setMinimumHeight(30)  # Adjust the height as needed
+
         self.language_combobox.currentIndexChanged.connect(self.change_language)
         self.content_layout.addWidget(self.language_combobox)
 
@@ -155,6 +181,17 @@ class MainWindow(QMainWindow):
         self.view_result_button = QPushButton(
             self.translations['view_result_button'][self.translations['current_language']], self)
         self.view_result_button.setObjectName("view_result_button")
+
+        # Set the font size for the button
+        font = QFont()
+        font.setPointSize(9)  # Adjust the font size as needed
+        self.view_result_button.setFont(font)
+
+        # Set the size policy and fixed size
+        self.view_result_button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.view_result_button.setFixedHeight(40)  # Adjust the height as needed
+        self.view_result_button.setFixedWidth(150)  # Adjust the width as needed
+
         self.progress_bar_layout.addWidget(self.view_result_button)
         # Connect the button click to the function
         self.view_result_button.clicked.connect(self.open_report_page)
@@ -190,6 +227,12 @@ class MainWindow(QMainWindow):
         self.output_text_edit = QTextEdit(self)
         self.output_text_edit.setReadOnly(True)
         self.output_text_edit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        # Set the font size for the output text
+        font = QFont()
+        font.setPointSize(12)  # Adjust the font size as needed
+        self.output_text_edit.setFont(font)
+
         self.result_layout.addWidget(self.output_text_edit)  # Endret fra content_layout til result_layout
 
         # Styling
@@ -358,6 +401,12 @@ class MainWindow(QMainWindow):
         item_label = QLabel(plugin_name)
         item_label.setToolTip(plugin_name)
         item_label.setStyleSheet("QToolTip:hover { background-color: white; color: black; border: solid;}")
+
+        # Adjust the font size here
+        font = QFont()
+        font.setPointSize(10)  # Set the desired font size
+        item_label.setFont(font)
+
         item_layout.addWidget(item_label, alignment=Qt.AlignLeft)
 
         checkbox = QCheckBox(self)
@@ -365,7 +414,7 @@ class MainWindow(QMainWindow):
 
         # Add heart button for favorites
         heart_label = QLabel("🤍")
-        heart_label.setFont(QFont("Arial", 12))  # Adjusted font size to 12px
+        heart_label.setFont(QFont("Arial", 10))  # Adjusted font size to 11px
         heart_label.mousePressEvent = lambda event, p=plugin_name: self.toggle_favorite(p, heart_label)
         item_layout.addWidget(heart_label, alignment=Qt.AlignRight)
 

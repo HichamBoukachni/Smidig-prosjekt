@@ -87,8 +87,6 @@ class MainWindow(QMainWindow):
         # Create the main layout which is a horizontal box layout
         self.main_layout = QHBoxLayout(self.central_widget)
 
-
-
         # Left sidebar layout
         self.sidebar_layout = QVBoxLayout()
         self.sidebar_layout.setAlignment(Qt.AlignTop)

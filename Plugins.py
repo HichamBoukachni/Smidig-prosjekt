@@ -9,6 +9,7 @@ from PyQt5.QtCore import Qt, QSize, QThread, pyqtSignal, QProcess
 
 
 class Worker(QThread):
+    # Define the signals to be emitted when the result is ready and to update progress
     result_ready = pyqtSignal(str)
     progress = pyqtSignal(int)
 
@@ -17,26 +18,30 @@ class Worker(QThread):
         self.command = command
 
     def run(self):
+        # Initialize QProcess to run the command
         process = QProcess()
-        process.setProcessChannelMode(QProcess.MergedChannels)
-        process.start(' '.join(self.command))
+        process.setProcessChannelMode(QProcess.MergedChannels)  # Merge standard and error channels
+        process.start(' '.join(self.command))  # Start the process with the given command
 
         total_lines = 0
         output = ""
         while process.waitForReadyRead():
+            # Read the process output line by line
             output += process.readAll().data().decode()
             total_lines += 1
+            # Calculate the progress as a percentage
             progress_percentage = min(100, int((total_lines / 100.0) * 100))
-            self.progress.emit(progress_percentage)
+            self.progress.emit(progress_percentage)  # Emit the progress signal
 
-        process.waitForFinished()
-        self.result_ready.emit(output)
+        process.waitForFinished()  # Wait for the process to finish
+        self.result_ready.emit(output)  # Emit the signal when the result is ready
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
-        super().__init__()
+        super().__init__()  # Initializes the base class QMainWindow
 
+        # Define translations for different languages
         self.translations = {
             'current_language': 'English',
             'data_field': {'English': 'Data Field', 'Norwegian': 'Datafelt'},
@@ -54,10 +59,8 @@ class MainWindow(QMainWindow):
             'ip_address': {'English': 'IP Address', 'Norwegian': 'IP-adresse'},
             'port': {'English': 'Port', 'Norwegian': 'Port'},
             'running': {'English': 'Running', 'Norwegian': 'Kjører'},
-            'no_specific_output': {'English': 'No specific output for plugin',
-                                   'Norwegian': 'Ingen spesifikk output for plugin'},
-            'plugin_execution_completed': {'English': 'Plugin execution completed',
-                                           'Norwegian': 'Pluginutførelse fullført'},
+            'no_specific_output': {'English': 'No specific output for plugin', 'Norwegian': 'Ingen spesifikk output for plugin'},
+            'plugin_execution_completed': {'English': 'Plugin execution completed', 'Norwegian': 'Pluginutførelse fullført'},
             'pid': {'English': 'PID', 'Norwegian': 'PID'},
             'name': {'English': 'Name', 'Norwegian': 'Navn'},
             'favorites': {'English': 'Favorites', 'Norwegian': 'Favoritter'},
@@ -72,13 +75,19 @@ class MainWindow(QMainWindow):
             'all_plugins': {'English': 'All Plugins', 'Norwegian': 'Alle Plugins'},
         }
 
+        # Set the window title based on the current language
         self.setWindowTitle(self.translations['data_field'][self.translations['current_language']])
+        # Set the window geometry (position and size)
         self.setGeometry(100, 100, 1200, 800)
 
+        # Create and set the central widget for the main window
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
 
+        # Create the main layout which is a horizontal box layout
         self.main_layout = QHBoxLayout(self.central_widget)
+
+
 
         # Left sidebar layout
         self.sidebar_layout = QVBoxLayout()
@@ -394,63 +403,68 @@ class MainWindow(QMainWindow):
             self.add_plugin_item(additional_features_item, sub_item)
 
     def add_plugin_item(self, parent_item, plugin_name):
+        # Create a widget to hold the plugin item
         item_widget = QWidget()
         item_layout = QHBoxLayout(item_widget)
         item_layout.setContentsMargins(0, 0, 0, 0)
-        item_layout.setSpacing(10)  # Ensure consistent spacing
+        item_layout.setSpacing(10)
+
+        # Create a label for the plugin name and set a larger font size
         item_label = QLabel(plugin_name)
         item_label.setToolTip(plugin_name)
-        item_label.setStyleSheet("QToolTip:hover { background-color: white; color: black; border: solid;}")
-
-        # Adjust the font size here
-        font = QFont()
-        font.setPointSize(10)  # Set the desired font size
+        font = QFont("Arial", 9)
         item_label.setFont(font)
-
+        item_label.setStyleSheet("QToolTip:hover { background-color: white; color: black; border: solid;}")
         item_layout.addWidget(item_label, alignment=Qt.AlignLeft)
 
+        # Create a checkbox for the plugin item
         checkbox = QCheckBox(self)
         item_layout.addWidget(checkbox, alignment=Qt.AlignRight)
 
-        # Add heart button for favorites
+        # Create a label for the heart icon
         heart_label = QLabel("🤍")
-        heart_label.setFont(QFont("Arial", 10))  # Adjusted font size to 11px
+        heart_label.setFont(QFont("Arial", 12))  # Adjust font size to match the plugin name
         heart_label.mousePressEvent = lambda event, p=plugin_name: self.toggle_favorite(p, heart_label)
         item_layout.addWidget(heart_label, alignment=Qt.AlignRight)
 
+        # Set the layout for the item widget
         item_widget.setLayout(item_layout)
 
+        # Add the item widget to the parent item in the tree
         tree_item = QTreeWidgetItem(parent_item)
         self.plugins_list.setItemWidget(tree_item, 0, item_widget)
+
+        # Store references to the checkbox and heart label for this plugin
         self.plugin_items[plugin_name] = {'checkbox': checkbox, 'heart_label': heart_label, 'tree_item': tree_item}
 
     def filter_plugins(self, text):
-        text = text.lower()
+        text = text.lower()  # Convert the search text to lowercase for case-insensitive comparison
         if not text:
-            # Reset all items to their original state
+            # If the search text is empty, reset all items to their original state
             for parent_item in self.parent_items:
-                parent_item.setHidden(False)
-                parent_item.setExpanded(False)  # Or True, depending on your default state
+                parent_item.setHidden(False)  # Make all parent items visible
+                parent_item.setExpanded(False)  # Collapse all parent items (or expand, depending on the default state)
                 for i in range(parent_item.childCount()):
                     child_item = parent_item.child(i)
-                    child_item.setHidden(False)
+                    child_item.setHidden(False)  # Make all child items visible
             return
 
+        # Iterate through all parent items and their children to filter based on the search text
         for parent_item in self.parent_items:
-            parent_item.setHidden(True)
+            parent_item.setHidden(True)  # Initially hide all parent items
             parent_has_visible_child = False
             for i in range(parent_item.childCount()):
                 child_item = parent_item.child(i)
                 widget = self.plugins_list.itemWidget(child_item, 0)
                 label = widget.findChild(QLabel)
                 if text in label.text().lower():
-                    child_item.setHidden(False)
-                    parent_item.setHidden(False)
-                    parent_item.setExpanded(True)
+                    child_item.setHidden(False)  # Show child item if it matches the search text
+                    parent_item.setHidden(False)  # Show parent item if it has a matching child
+                    parent_item.setExpanded(True)  # Expand parent item to show matching child
                     parent_has_visible_child = True
                 else:
-                    child_item.setHidden(True)
-            parent_item.setHidden(not parent_has_visible_child)
+                    child_item.setHidden(True)  # Hide child item if it doesn't match the search text
+            parent_item.setHidden(not parent_has_visible_child)  # Hide parent item if it has no matching children
             if parent_has_visible_child:
                 parent_item.setExpanded(True)
             else:
@@ -466,89 +480,139 @@ class MainWindow(QMainWindow):
 
     def toggle_favorite(self, plugin_name, heart_label):
         if plugin_name in self.favorites:
-            self.remove_from_favorites(plugin_name)
-            heart_label.setText("🤍")
+            self.remove_from_favorites(plugin_name)  # Remove the plugin from favorites if it's already a favorite
+            heart_label.setText("🤍")  # Change the heart label to an empty heart
         else:
-            self.add_to_favorites(plugin_name)
-            heart_label.setText("🧡")
+            self.add_to_favorites(plugin_name)  # Add the plugin to favorites if it's not already a favorite
+            heart_label.setText("🧡")  # Change the heart label to a filled heart
 
     def add_to_favorites(self, plugin_name):
+        # Sjekk om pluginet ikke allerede er i favoritter
         if plugin_name not in self.favorites:
-            self.favorites.add(plugin_name)
-            favorite_item = QTreeWidgetItem(self.favorites_list)
+            self.favorites.add(plugin_name)  # Legg til pluginet i favoritter-settet
+            favorite_item = QTreeWidgetItem(self.favorites_list)  # Opprett en ny QTreeWidgetItem i favoritter-listen
 
+            # Opprett en widget og layout for favorittelementet
             item_widget = QWidget()
             item_layout = QHBoxLayout(item_widget)
-            item_layout.setContentsMargins(0, 0, 0, 0)
-            item_layout.setSpacing(10)  # Ensure consistent spacing
+            item_layout.setContentsMargins(0, 0, 0, 0)  # Sett marger til 0 for layouten
+            item_layout.setSpacing(10)  # Sett avstand mellom elementene i layouten
+
+            # Opprett en QLabel for å vise plugin-navnet
             item_label = QLabel(plugin_name)
-            item_layout.addWidget(item_label, alignment=Qt.AlignLeft)
+            item_layout.addWidget(item_label,
+                                  alignment=Qt.AlignLeft)  # Legg til etiketten i layouten med venstrejustering
 
+            # Opprett en QCheckBox og legg den til layouten
             checkbox = QCheckBox(self)
-            item_layout.addWidget(checkbox, alignment=Qt.AlignRight)
+            item_layout.addWidget(checkbox,
+                                  alignment=Qt.AlignRight)  # Legg til avmerkingsboksen i layouten med høyrejustering
 
+            # Opprett en QLabel for hjertet som indikerer favorittstatus
             heart_label = QLabel("🧡")
-            heart_label.setFont(QFont("Arial", 12))  # Adjusted font size to 12px
+            heart_label.setFont(QFont("Arial", 12))  # Sett fonten og størrelsen for hjertelabelen
+            # Legg til en mousePressEvent for å håndtere favoritt-til/fra veksling
             heart_label.mousePressEvent = lambda event, p=plugin_name: self.toggle_favorite(p, heart_label)
-            item_layout.addWidget(heart_label, alignment=Qt.AlignRight)
+            item_layout.addWidget(heart_label,
+                                  alignment=Qt.AlignRight)  # Legg til hjertelabelen i layouten med høyrejustering
 
+            # Sett layouten for widgeten
             item_widget.setLayout(item_layout)
+            # Legg widgeten til favorittelementet i treet
             self.favorites_list.setItemWidget(favorite_item, 0, item_widget)
 
+            # Lagre referanser til avmerkingsboksen og hjertelabelen for dette pluginet
             self.plugin_items[plugin_name]['favorite_checkbox'] = checkbox
             self.plugin_items[plugin_name]['favorite_heart_label'] = heart_label
 
     def remove_from_favorites(self, plugin_name):
+        # Sjekk om pluginet er i favoritter
         if plugin_name in self.favorites:
-            self.favorites.remove(plugin_name)
-            root = self.favorites_list.invisibleRootItem()
+            self.favorites.remove(plugin_name)  # Fjern pluginet fra favoritter-settet
+            root = self.favorites_list.invisibleRootItem()  # Få roten til favorittlisten
+            # Iterer gjennom alle barn av roten for å finne riktig plugin
             for i in range(root.childCount()):
                 child = root.child(i)
-                widget = self.favorites_list.itemWidget(child, 0)
+                widget = self.favorites_list.itemWidget(child, 0)  # Få widgeten for dette barnet
                 if widget:
-                    label = widget.findChild(QLabel)
-                    if label and label.text() == plugin_name:
-                        root.removeChild(child)
+                    label = widget.findChild(QLabel)  # Finn QLabel i widgeten
+                    if label and label.text() == plugin_name:  # Sjekk om teksten i QLabel samsvarer med plugin-navnet
+                        root.removeChild(child)  # Fjern barnet fra treet
                         break
 
-            # Update the main list heart label
+            # Oppdater hovedlisten hjertelabel
             if 'heart_label' in self.plugin_items[plugin_name]:
-                self.plugin_items[plugin_name]['heart_label'].setText("🤍")
+                self.plugin_items[plugin_name]['heart_label'].setText("🤍")  # Sett hjertelabelen til et tomt hjerte
 
+            # Fjern referansene til avmerkingsboksen og hjertelabelen for dette pluginet
             del self.plugin_items[plugin_name]['favorite_checkbox']
             del self.plugin_items[plugin_name]['favorite_heart_label']
 
     def open_file_dialog(self):
+        # Create a file dialog
         file_dialog = QFileDialog()
+
+        # Set the file dialog to accept any file type
         file_dialog.setFileMode(QFileDialog.AnyFile)
-        file_dialog.setNameFilter("Memory Dumps (*.mem *.raw *.dd *.bin *.dmp *.mdmp *.hiberfil.sys *.pagefile.sys *.vmem *.vmsn *.vmtm *.sav *.)")
+
+        # Set the name filter to only show memory dump files
+        file_dialog.setNameFilter(
+            "Memory Dumps (*.mem *.raw *.dd *.bin *.dmp *.mdmp *.hiberfil.sys *.pagefile.sys *.vmem *.vmsn *.vmtm *.sav *.)")
+
+        # Set the view mode to show detailed information about files
         file_dialog.setViewMode(QFileDialog.Detail)
+
+        # Execute the file dialog and check if the user selected a file
         if file_dialog.exec_():
+            # If a file is selected, get the file path
             self.file_path = file_dialog.selectedFiles()[0]
+
+            # Print the selected file path to the console (for debugging)
             print(f"Selected file: {self.file_path}")
+
+            # Make the analyze button visible
             self.analyze_button.setVisible(True)
 
     def analyze_memory_dump(self):
-        selected_plugins = [plugin_name for plugin_name, items in self.plugin_items.items() if items['checkbox'].isChecked()]
+        # Create a list of selected plugins by checking which checkboxes are checked
+        selected_plugins = [plugin_name for plugin_name, items in self.plugin_items.items() if
+                            items['checkbox'].isChecked()]
+
+        # If no plugins are selected, print a message and append it to the output text edit
         if not selected_plugins:
             print("No plugins selected.")
             self.output_text_edit.append("No plugins selected.")
             return
 
+        # Iterate through each selected plugin
         for plugin in selected_plugins:
-            print(f"Analyzing with plugin: {plugin}")
-            self.output_text_edit.append(f"Analyzing with plugin: {plugin}")
+            print(f"Analyzing with plugin: {plugin}")  # Print the plugin being analyzed
+            self.output_text_edit.append(
+                f"Analyzing with plugin: {plugin}")  # Append the plugin being analyzed to the output text edit
+
+            # Create the command to run the plugin with the selected file
             command = ["python", self.vol_path, "-f", self.file_path, plugin]
+
+            # Initialize the Worker thread with the command
             self.worker = Worker(command)
+
+            # Connect the result_ready signal to the display_result method
             self.worker.result_ready.connect(self.display_result)
+
+            # Connect the progress signal to the update_progress method
             self.worker.progress.connect(self.update_progress)
+
+            # Start the Worker thread
             self.worker.start()
 
     def display_result(self, result):
+        # Clear the output text edit before displaying new results
         self.output_text_edit.clear()
+        # Append the result to the output text edit
         self.output_text_edit.append(result)
 
     def update_progress(self, value):
+        # Set the value of the progress bar to the given value
         self.progress_bar.setValue(value)
 
     def back_button_clicked(self):
@@ -572,6 +636,7 @@ class MainWindow(QMainWindow):
         # self.close()
 
     def change_language(self):
+        # Changes the language of the user interface based on the selected language from the combo box.
         self.translations['current_language'] = self.language_combobox.currentText()
         self.setWindowTitle(self.translations['data_field'][self.translations['current_language']])
         self.search_bar.setPlaceholderText(self.translations['search'][self.translations['current_language']])
@@ -582,6 +647,7 @@ class MainWindow(QMainWindow):
         self.update_plugins_list()
 
     def update_plugins_list(self):
+        # Updates the plugin list in the user interface based on the current language.
         self.plugins_list.clear()
         language = self.translations['current_language']
 
@@ -630,7 +696,6 @@ class MainWindow(QMainWindow):
         for sub_item in ["windows.info.Info", "windows.imageinfo.ImageInfo", "windows.kdbgscan.KdbgScan"]:
             self.add_plugin_item(system_info_item, sub_item)
 
-        # Legger til flere Vol3 plugins
         kernel_item = QTreeWidgetItem(self.plugins_list)
         kernel_item.setText(0, "Kernel")
         self.parent_items.append(kernel_item)
@@ -652,7 +717,7 @@ class MainWindow(QMainWindow):
         for sub_item in ["windows.volshell.Volshell", "yarascan.YaraScan"]:
             self.add_plugin_item(additional_features_item, sub_item)
 
-
+# Entry point for the application. Initializes the QApplication and the main window, then starts the event loop.
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()

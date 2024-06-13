@@ -23,6 +23,7 @@ class SettingsDialog(QDialog):
         self.header_label.setAlignment(Qt.AlignCenter)  # Center align the header
         self.header_label.setStyleSheet("font-size: 18px; font-weight: bold; margin-top: 10px; margin-bottom: 20px;")
         self.layout.addWidget(self.header_label, 0, 0, 1, 4)
+        self.setWindowFlags(Qt.FramelessWindowHint)  # Remove window frame
 
         # Button to enable automatic saving to the cloud
         self.autosave_button = QPushButton("Automatically save to cloud", self)
@@ -118,25 +119,35 @@ class SettingsDialog(QDialog):
             QComboBox {
                 background-color: #FFFFFF; 
                 color: #000000; 
-                border: 1px solid #FF4500; 
+                border: 1px solid rgb(217, 111, 51); 
+                border-radius: 10px;
                 padding: 5px;
                 margin: 5px;
             }
             QComboBox QAbstractItemView {
                 background-color: #FFFFFF;
                 color: #000000;
-                selection-background-color: #FF4500;
+                selection-background-color: rgb(217, 111, 51);
+            }
+              QComboBox::drop-down {
+                border-radius: 10px; 
+                width: 40%;
+            }
+            QComboBox::down-arrow {
+                image: url(images/_arrowdownO.png);
+                max-width: 150%; 
+                max-height: 150%;
             }
             QPushButton {
                 background-color: #FFFFFF; 
                 color: #000000; 
-                border: 1px solid #FF4500; 
+                border: 1px solid rgb(217, 111, 51); 
                 padding: 10px;
                 margin: 5px;
                 border-radius: 5px;
             }
             QPushButton:checked {
-                background-color: #FF4500; 
+                background-color: rgb(217, 111, 51); 
                 color: #FFFFFF;
             }
             QPushButton:hover {
@@ -151,39 +162,49 @@ class SettingsDialog(QDialog):
     def get_darkmode_stylesheet(self):
         return """
             QDialog {
-                background-color: #1E1E1E; 
-                color: #C0C0C0;
+                background-color: rgb(28, 37, 48); 
+                color: rgb(177, 188, 200);
             }
             QLabel {
-                color: #C0C0C0;
+                color: rgb(177, 188, 200);
                 font-size: 14px;
             }
             QComboBox {
-                background-color: #1E1E1E; 
-                color: #C0C0C0; 
-                border: 1px solid #FF4500; 
+                background-color: rgb(42, 53, 65); 
+                color: rgb(177, 188, 200); 
+                border: 1px solid rgb(217, 111, 51); 
+                border-radius: 10px;
                 padding: 5px;
                 margin: 5px;
             }
             QComboBox QAbstractItemView {
-                background-color: #333333;
-                color: #C0C0C0;
-                selection-background-color: #FF4500;
+                background-color: rgb(42, 53, 65);
+                color: rgb(177, 188, 200);
+                selection-background-color: rgb(217, 111, 51);
+            }
+            QComboBox::drop-down {
+                border-radius: 10px; 
+                width: 40%;
+            }
+            QComboBox::down-arrow {
+                image: url(images/_arrowdownO.png);
+                max-width: 150%; 
+                max-height: 150%;
             }
             QPushButton {
-                background-color: #333333; 
-                color: #C0C0C0; 
-                border: 1px solid #FF4500; 
+                background-color: rgb(42, 53, 65); 
+                color: rgb(177, 188, 200); 
+                border: 1px solid rgb(217, 111, 51); 
                 padding: 10px;
                 margin: 5px;
                 border-radius: 5px;
             }
             QPushButton:checked {
-                background-color: #FF4500; 
-                color: #C0C0C0;
+                background-color: rgb(217, 111, 51); 
+                color: rgb(177, 188, 200);
             }
             QPushButton:hover {
-                background-color: #FF6347;
+                background-color: rgb(217, 111, 51);
             }
             QComboBox:hover {
                 border: 1px solid #FF6347;

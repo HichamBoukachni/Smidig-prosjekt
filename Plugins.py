@@ -1,36 +1,37 @@
-import sys
-import os
-import subprocess
+# Import necessary modules and classes
+import sys  # Provides access to some variables used or maintained by the interpreter
+import os  # Provides a way of using operating system dependent functionality like reading or writing to the file system
+import subprocess  # Allows you to spawn new processes, connect to their input/output/error pipes, and obtain their return codes
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QPushButton,
                              QProgressBar, QComboBox, QWidget, QLabel, QTreeWidget, QTreeWidgetItem, QLineEdit,
-                             QFileDialog, QCheckBox, QTextEdit, QSizePolicy)
-from PyQt5.QtGui import QIcon, QPixmap, QFont
-from PyQt5.QtCore import Qt, QSize, QThread, pyqtSignal, QProcess
+                             QFileDialog, QCheckBox, QTextEdit, QSizePolicy)  # Import various PyQt5 classes for the GUI
+from PyQt5.QtGui import QIcon, QPixmap, QFont  # Import classes for handling icons, images, and fonts
+from PyQt5.QtCore import Qt, QSize, QThread, pyqtSignal, QProcess  # Import core classes for thread management, signals, and processes
 
-
+# Worker class to handle plugin execution in a separate thread
 class Worker(QThread):
-    result_ready = pyqtSignal(str)
-    progress = pyqtSignal(int)
+    result_ready = pyqtSignal(str)  # Signal to emit when the result is ready
+    progress = pyqtSignal(int)  # Signal to emit progress updates
 
     def __init__(self, command):
         super().__init__()
         self.command = command
 
     def run(self):
-        process = QProcess()
-        process.setProcessChannelMode(QProcess.MergedChannels)
-        process.start(' '.join(self.command))
+        process = QProcess()  # Create a QProcess object
+        process.setProcessChannelMode(QProcess.MergedChannels)  # Merge stdout and stderr
+        process.start(' '.join(self.command))  # Start the process with the given command
 
         total_lines = 0
         output = ""
-        while process.waitForReadyRead():
-            output += process.readAll().data().decode()
+        while process.waitForReadyRead():  # Wait for the process to produce output
+            output += process.readAll().data().decode()  # Read the output
             total_lines += 1
-            progress_percentage = min(100, int((total_lines / 100.0) * 100))
-            self.progress.emit(progress_percentage)
+            progress_percentage = min(100, int((total_lines / 100.0) * 100))  # Calculate progress
+            self.progress.emit(progress_percentage)  # Emit progress signal
 
-        process.waitForFinished()
-        self.result_ready.emit(output)
+        process.waitForFinished()  # Wait for the process to finish
+        self.result_ready.emit(output)  # Emit result ready signal with the output
 
 
 class MainWindow(QMainWindow):
